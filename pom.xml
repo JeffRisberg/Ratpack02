@@ -27,17 +27,12 @@
         </dependency>
         <dependency>
             <groupId>io.ratpack</groupId>
-            <artifactId>ratpack-handlebars</artifactId>
-            <version>${ratpackVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.ratpack</groupId>
             <artifactId>ratpack-jackson</artifactId>
             <version>${ratpackJacksonVersion}</version>
         </dependency>
         <dependency>
             <groupId>io.ratpack</groupId>
-            <artifactId>ratpack-test</artifactId>
+            <artifactId>ratpack-hikari</artifactId>
             <version>${ratpackVersion}</version>
         </dependency>
         <dependency>
@@ -51,6 +46,12 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.192</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>

@@ -1,6 +1,7 @@
 package com.incra.ratpack.services;
 
 import com.incra.ratpack.models.User;
+import ratpack.exec.Promise;
 
 import java.util.List;
 
@@ -10,6 +11,6 @@ import java.util.List;
  */
 public interface UserService {
 
-    public List<User> list();
+    public Promise<List<User>> list();
 
 }
