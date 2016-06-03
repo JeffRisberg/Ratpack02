@@ -1,12 +1,27 @@
 package com.incra.ratpack.models;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
  * @author jeff
  * @since 6/1/16
  */
+@Entity
 public class User {
+    @Id
+    @GeneratedValue
+    protected Long id;
+
+    @Column
     protected String username;
+    @Column
     protected String email;
+
+    public User() {
+    }
 
     public User(String username, String email) {
         this.username = username;

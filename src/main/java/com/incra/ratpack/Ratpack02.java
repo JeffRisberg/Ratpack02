@@ -2,6 +2,9 @@ package com.incra.ratpack;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.incra.ratpack.database.DBTransaction;
+import com.incra.ratpack.database.DatabaseItemManager;
+import com.incra.ratpack.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.exec.Blocking;
@@ -60,48 +63,53 @@ public class Ratpack02 {
                                         })))
                         .handlers(chain -> chain
                                 .get(ctx -> {
+                                    DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+
                                     Blocking.get(() -> {
-                                        DataSource dataSource = ctx.get(DataSource.class);
+                                        DBTransaction dbTransaction = dbManager.getDatabase();
+
+                                        List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
+
                                         List<Map<String, String>> personList = Lists.newArrayList();
-                                        try (Connection connection = dataSource.getConnection()) {
-                                            ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM USER");
-                                            while (rs.next()) {
-                                                long id = rs.getLong(1);
-                                                String username = rs.getString(2);
-                                                String email = rs.getString(3);
-                                                Map<String, String> person = Maps.newHashMap();
-                                                person.put("id", String.valueOf(id));
-                                                person.put("username", username);
-                                                person.put("email", email);
-                                                personList.add(person);
-                                            }
+                                        for (User user : listUsers) {
+                                            Map<String, String> person = Maps.newHashMap();
+                                            person.put("username", user.getUsername());
+                                            person.put("email", user.getEmail());
+                                            personList.add(person);
                                         }
+                                        dbTransaction.commit();
+
                                         return personList;
                                     }).then(personList -> ctx.render(json(personList)));
                                 })
-                                .post("create", ctx ->
-                                                ctx.parse(Form.class).then(f -> {
-                                                    String name = f.get("name");
-                                                    if (name != null) {
-                                                        Blocking.get(() -> {
-                                                            DataSource dataSource = ctx.get(DataSource.class);
-                                                            try (Connection connection = dataSource.getConnection()) {
-                                                                PreparedStatement pstmt = connection.prepareStatement(
-                                                                        "INSERT INTO USER (USERNAME,EMAIL) VALUES(?1, 'email@gmail.com');");
-                                                                pstmt.setString(1, name);
-                                                                pstmt.execute();
-                                                            }
-                                                            return true;
-                                                        }).onError(t -> {
-                                                            ctx.getResponse().status(400);
-                                                            ctx.render(json(getResponseMap(false, t.getMessage())));
-                                                        }).then(r ->
-                                                                ctx.render(json(getResponseMap(true, null))));
-                                                    } else {
-                                                        ctx.getResponse().status(400);
-                                                        ctx.render(json(getResponseMap(false, "name not provided")));
-                                                    }
-                                                })
+                                .post("create", ctx -> {
+                                            DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+
+                                            Blocking.get(() -> {
+                                                DBTransaction dbTransaction = dbManager.getDatabase();
+
+                                                User newUser = new User();
+                                                newUser.setUsername("Han Solo");
+                                                newUser.setEmail("han@rebels.org");
+                                                dbTransaction.create(newUser);
+
+                                                /*
+                                                DataSource dataSource = ctx.get(DataSource.class);
+                                                try (Connection connection = dataSource.getConnection()) {
+                                                    PreparedStatement pstmt = connection.prepareStatement(
+                                                            "INSERT INTO USER (USERNAME,EMAIL) VALUES(?1, 'email@gmail.com');");
+                                                    pstmt.setString(1, "Bob");
+                                                    pstmt.execute();
+                                                }
+                                                */
+                                                dbTransaction.commit();
+                                                return true;
+                                            }).onError(t -> {
+                                                ctx.getResponse().status(400);
+                                                ctx.render(json(getResponseMap(false, t.getMessage())));
+                                            }).then(r ->
+                                                    ctx.render(json(getResponseMap(true, null))));
+                                        }
                                 ))
         );
     }
