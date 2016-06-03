@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract database item, which has an id field..
+ * Abstract database item, which has an id field.
  */
 @MappedSuperclass
 public abstract class DatabaseItem implements Serializable {

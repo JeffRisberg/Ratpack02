@@ -31,10 +31,6 @@ public class Ratpack02 {
 
     public static void main(String[] args) throws Exception {
         RatpackServer.start(spec -> spec
-                        .serverConfig(config -> config
-                                .baseDir(BaseDir.find())
-                                .json("dbconfig.json")
-                                .require("/database", DatabaseConfig.class))
                         .registry(Guice.registry(bindingsSpec ->
                                 bindingsSpec
                                         .module(HikariModule.class, c -> {
@@ -55,9 +51,9 @@ public class Ratpack02 {
                                                     connection.createStatement()
                                                             .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Luke Daley','luke@gmail.com')");
                                                     connection.createStatement()
-                                                            .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Rob Fletch','Rob@gmail.com')");
+                                                            .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Rob Fletch','rob@gmail.com')");
                                                     connection.createStatement()
-                                                            .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Dan Woods','Dan@gmail.com')");
+                                                            .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Dan Woods','dan@gmail.com')");
                                                 }
                                             }
                                         })))
@@ -66,13 +62,14 @@ public class Ratpack02 {
                                     DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
 
                                     Blocking.get(() -> {
-                                        DBTransaction dbTransaction = dbManager.getDatabase();
+                                        DBTransaction dbTransaction = dbManager.getTransaction();
 
                                         List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
 
                                         List<Map<String, String>> personList = Lists.newArrayList();
                                         for (User user : listUsers) {
                                             Map<String, String> person = Maps.newHashMap();
+                                            person.put("id", ""+user.getId());
                                             person.put("username", user.getUsername());
                                             person.put("email", user.getEmail());
                                             personList.add(person);
@@ -86,7 +83,7 @@ public class Ratpack02 {
                                             DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
 
                                             Blocking.get(() -> {
-                                                DBTransaction dbTransaction = dbManager.getDatabase();
+                                                DBTransaction dbTransaction = dbManager.getTransaction();
 
                                                 User newUser = new User();
                                                 newUser.setUsername("Han Solo");

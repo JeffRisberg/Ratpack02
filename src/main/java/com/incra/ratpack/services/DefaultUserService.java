@@ -1,14 +1,6 @@
 package com.incra.ratpack.services;
 
 import com.google.inject.Inject;
-import com.incra.ratpack.models.User;
-import ratpack.exec.Blocking;
-import ratpack.exec.Promise;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.incra.ratpack.models.User;
 import org.hibernate.Session;
 
 /**
@@ -17,12 +9,10 @@ import org.hibernate.Session;
  */
 public class DefaultUserService {
 
-    //private final ExecControl execControl;
     private final Session session;
 
     @Inject
     DefaultUserService(Session session) {
-        //this.execControl = execControl;
         this.session = session;
     }
 

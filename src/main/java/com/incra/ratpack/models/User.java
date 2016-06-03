@@ -6,8 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
- * @author jeff
- * @since 6/1/16
+ * @author Jeff Risberg
+ * @since 05/30/16
  */
 @Entity
 public class User {
@@ -23,9 +23,18 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email) {
+    public User(Long id, String username, String email) {
+        this.id = id;
         this.username = username;
         this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

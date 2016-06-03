@@ -3,34 +3,21 @@ package com.incra.ratpack.database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Database access handling class.
- * <p/>
- * Requires that the properties database.name and database.type be set to the
- * name of the database and the database type (i.e., justgive or amex) being used.
- * <p/>
- * The DBSessionFactory is obtained by calling the getInstance() method.  Database
- * interaction itself is handled by getting a DBSession from the DBSessionFactory.
- *
- * @author Curtis
- * @since 2007
  */
 public class DBSessionFactory {
     private static Logger jgLog = LoggerFactory.getLogger(DBSessionFactory.class);
 
-    // List of all the existing ones
+    // List of all the existing instances
     private static Map<String, DBSessionFactory> datasources = new HashMap<String, DBSessionFactory>();
 
-    // The name given to the datasource by the application
-    // In jpa, this is the persistence unit name
+    // Persistence unit name
     protected String datasourceName;
 
     // The actual database name
@@ -40,7 +27,6 @@ public class DBSessionFactory {
 
     private static final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
 
-    // Holds the JpaTransaction for the thread
     private static final ThreadLocal<DBTransaction> transaction = new ThreadLocal<>();
 
     protected DBSessionFactory() {
@@ -55,10 +41,8 @@ public class DBSessionFactory {
 
     protected void instantiateSessionFactory() throws DBException {
         try {
-            //Properties jpaProperties = new Properties();
-
             emf = Persistence.createEntityManagerFactory(datasourceName);
-       } catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new DBException(e);
         }
@@ -66,13 +50,10 @@ public class DBSessionFactory {
 
     /**
      * Returns the default DBSessionFactory instance.
-     * <p/>
-     * Requires that the property database.default.name is set.
      *
      * @return DBSessionFactory
      */
     public static synchronized DBSessionFactory getInstance() throws DBException {
-        // Get the default instance
         try {
             return getInstance("ratpack-jpa");
         } catch (Exception e) {
@@ -81,14 +62,13 @@ public class DBSessionFactory {
     }
 
     /**
-     * Obtains the DBSessionFactory instance for the given datasource name.
+     * Obtains the DBSessionFactory instance for the given datasource name.  Check the map for the datasource.
+     * Instantiate a new one, if necessary
      *
      * @param datasourceName The datasource name
      * @return DBSessionFactory
      */
     public static synchronized DBSessionFactory getInstance(String datasourceName) throws DBException {
-        // Check the map for the datasource
-        // Instantiate a new one, if necessary
         DBSessionFactory sessionFactory = datasources.get(datasourceName);
 
         if (sessionFactory == null) {
@@ -101,8 +81,6 @@ public class DBSessionFactory {
     private static DBSessionFactory setupSessionFactory(String datasourceName) throws DBException {
         DBSessionFactory datasource;
 
-        // Get the database properties.
-        // These properties must be set separately in the calling application.
         try {
             datasource = new DBSessionFactory(datasourceName);
             datasources.put(datasourceName, datasource);
@@ -187,11 +165,6 @@ public class DBSessionFactory {
         DBTransaction dbTransaction = new DBTransaction(getEntityManager());
         dbTransaction.begin();
         return dbTransaction;
-    }
-
-    // JpaSessionFactory methods
-    public EntityManagerFactory getEntityManagerFactory() {
-        return emf;
     }
 
     public EntityManager getEntityManager() throws DBException {
