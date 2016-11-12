@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <ratpackVersion>1.2.0</ratpackVersion>
+        <ratpackVersion>1.4.4</ratpackVersion>
         <ratpackJacksonVersion>0.9.7</ratpackJacksonVersion>
     </properties>
 
