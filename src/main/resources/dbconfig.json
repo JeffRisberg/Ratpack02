@@ -1,7 +1,0 @@
-{
-  "database": {
-    "host": "mysql001.dev.company.com",
-    "user": "ratpack",
-    "password": "l3arn!ngR@tpack"
-  }
-}
