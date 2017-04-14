@@ -70,87 +70,104 @@ public class Ratpack02 {
                                     }
                                 })))
                 .handlers(chain -> chain
-                        .post("createUser", ctx -> {
-                                    DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+                        .path("events", ctx -> ctx.byMethod(eventSpec ->
+                                eventSpec
+                                        .get(() -> ctx.render("events get handler"))
+                                        .put(() -> ctx.render("events put handler"))
+                                        .post(() -> ctx.render("events post handler"))))
 
-                                    Blocking.get(() -> {
-                                        DBTransaction dbTransaction = dbManager.getTransaction();
+                        .path("users", ctx -> ctx.byMethod(userSpec ->
+                                userSpec
+                                        .post(() ->
+                                                {
+                                                    DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+                                                    String username = ctx.getRequest().getQueryParams()
+                                                            .getOrDefault("username", "Han Solo");
+                                                    String email = ctx.getRequest().getQueryParams()
+                                                            .getOrDefault("username", "han@rebels.org");
 
-                                        User newUser = new User();
-                                        newUser.setUsername("Han Solo");
-                                        newUser.setEmail("han@rebels.org");
-                                        dbTransaction.create(newUser);
+                                                    Blocking.get(() -> {
+                                                        DBTransaction dbTransaction = dbManager.getTransaction();
 
-                                        dbTransaction.commit();
-                                        return true;
-                                    }).onError(t -> {
-                                        ctx.getResponse().status(400);
-                                        ctx.render(json(getResponseMap(false, t.getMessage())));
-                                    }).then(r ->
-                                            ctx.render(json(getResponseMap(true, null))));
-                                }
+                                                        dbTransaction.create(new User(username, email));
+                                                        dbTransaction.commit();
+                                                        return true;
+                                                    }).onError(t -> {
+                                                        ctx.getResponse().status(400);
+                                                        ctx.render(json(getResponseMap(false, t.getMessage())));
+                                                    }).then(r ->
+                                                            ctx.render(json(getResponseMap(true, null))));
+                                                }
+                                        )
+                                        .get(() ->
+                                                {
+                                                    DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+
+                                                    Blocking.get(() -> {
+                                                        DBTransaction dbTransaction = dbManager.getTransaction();
+
+                                                        List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
+
+                                                        List<Map<String, String>> userList = Lists.newArrayList();
+                                                        for (User user : listUsers) {
+                                                            Map<String, String> userAsMap = Maps.newHashMap();
+                                                            userAsMap.put("id", "" + user.getId());
+                                                            userAsMap.put("username", user.getUsername());
+                                                            userAsMap.put("email", user.getEmail());
+                                                            userList.add(userAsMap);
+                                                        }
+                                                        dbTransaction.commit();
+
+                                                        return userList;
+                                                    }).then(personList -> ctx.render(json(personList)));
+                                                }
+                                        )
+                        ))
+
+                        .path("metrics", ctx -> ctx.byMethod(metricsSpec ->
+                                        metricsSpec
+                                                .post(() ->
+                                                        {
+                                                            DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+                                                            String name = ctx.getRequest().getQueryParams()
+                                                                    .getOrDefault("name", "ClickCount");
+
+                                                            Blocking.get(() -> {
+                                                                DBTransaction dbTransaction = dbManager.getTransaction();
+
+                                                                dbTransaction.create(new Metric(name));
+                                                                dbTransaction.commit();
+                                                                return true;
+                                                            }).onError(t -> {
+                                                                ctx.getResponse().status(400);
+                                                                ctx.render(json(getResponseMap(false, t.getMessage())));
+                                                            }).then(r ->
+                                                                    ctx.render(json(getResponseMap(true, null))));
+                                                        }
+                                                )
+                                                .get(() ->
+                                                {
+                                                    DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
+
+                                                    Blocking.get(() -> {
+                                                        DBTransaction dbTransaction = dbManager.getTransaction();
+
+                                                        List<Metric> listMetrics = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
+
+                                                        List<Map<String, String>> metricList = Lists.newArrayList();
+                                                        for (Metric metric : listMetrics) {
+                                                            Map<String, String> metricAsMap = Maps.newHashMap();
+                                                            metricAsMap.put("id", "" + metric.getId());
+                                                            metricAsMap.put("name", metric.getName());
+                                                            metricList.add(metricAsMap);
+                                                        }
+                                                        dbTransaction.commit();
+
+                                                        return metricList;
+                                                    }).then(metricList -> ctx.render(json(metricList)));
+                                                })
+                                )
                         )
-                        .get("getUsers", ctx -> {
-                            DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
-
-                            Blocking.get(() -> {
-                                DBTransaction dbTransaction = dbManager.getTransaction();
-
-                                List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
-
-                                List<Map<String, String>> userList = Lists.newArrayList();
-                                for (User user : listUsers) {
-                                    Map<String, String> userAsMap = Maps.newHashMap();
-                                    userAsMap.put("id", "" + user.getId());
-                                    userAsMap.put("username", user.getUsername());
-                                    userAsMap.put("email", user.getEmail());
-                                    userList.add(userAsMap);
-                                }
-                                dbTransaction.commit();
-
-                                return userList;
-                            }).then(personList -> ctx.render(json(personList)));
-                        })
-                        .post("createMetric", ctx -> {
-                                    DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
-
-                                    Blocking.get(() -> {
-                                        DBTransaction dbTransaction = dbManager.getTransaction();
-
-                                        Metric newMetric = new Metric();
-                                        newMetric.setName("ClickCount");
-                                        dbTransaction.create(newMetric);
-
-                                        dbTransaction.commit();
-                                        return true;
-                                    }).onError(t -> {
-                                        ctx.getResponse().status(400);
-                                        ctx.render(json(getResponseMap(false, t.getMessage())));
-                                    }).then(r ->
-                                            ctx.render(json(getResponseMap(true, null))));
-                                }
-                        )
-                        .get("getMetrics", ctx -> {
-                            DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
-
-                            Blocking.get(() -> {
-                                DBTransaction dbTransaction = dbManager.getTransaction();
-
-                                List<Metric> listMetrics = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
-
-                                List<Map<String, String>> metricList = Lists.newArrayList();
-                                for (Metric metric : listMetrics) {
-                                    Map<String, String> metricAsMap = Maps.newHashMap();
-                                    metricAsMap.put("id", "" + metric.getId());
-                                    metricAsMap.put("name", metric.getName());
-                                    metricList.add(metricAsMap);
-                                }
-                                dbTransaction.commit();
-
-                                return metricList;
-                            }).then(metricList -> ctx.render(json(metricList)));
-                        })
-                        .all(ctx -> ctx.render("root handler!"))
                 )
         );
     }

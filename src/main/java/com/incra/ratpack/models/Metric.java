@@ -18,6 +18,10 @@ public class Metric extends DatedDatabaseItem {
     public Metric() {
     }
 
+    public Metric(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
