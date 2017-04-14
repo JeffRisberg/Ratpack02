@@ -1,9 +1,8 @@
 package com.incra.ratpack.handlers;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.database.DatabaseItemManager;
+import com.incra.ratpack.models.Event;
 import com.incra.ratpack.models.Metric;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
@@ -13,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ratpack.jackson.Jackson.json;
 
@@ -61,16 +61,17 @@ public class MetricHandler extends BaseHandler implements Handler {
 
             List<Metric> listMetrics = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
 
-            List<Map<String, String>> metricList = Lists.newArrayList();
-            for (Metric metric : listMetrics) {
-                Map<String, String> metricAsMap = Maps.newHashMap();
-                metricAsMap.put("id", "" + metric.getId());
-                metricAsMap.put("name", metric.getName());
-                metricList.add(metricAsMap);
-            }
+            List<Map<String, Object>> metricList = listMetrics.stream()
+                    .map(m -> m.asMap())
+                    .collect(Collectors.toList());
+
+            Event event = new Event("FETCH", "METRICS");
+            dbTransaction.create(event);
+
             dbTransaction.commit();
 
             return metricList;
-        }).then(metricList -> ctx.render(json(metricList)));
+        }).then(metricList ->
+                ctx.render(json(metricList)));
     }
 }

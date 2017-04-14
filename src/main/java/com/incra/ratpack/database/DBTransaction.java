@@ -14,7 +14,7 @@ import javax.persistence.Query;
  * A DBTransaction is a set of access methods around an entity manager and the current transaction.
  *
  * @author Jeff Risberg
- * @since late 2014
+ * @since late 2016
  */
 public class DBTransaction {
     private static Logger jgLog = LoggerFactory.getLogger(DBTransaction.class);
@@ -41,10 +41,6 @@ public class DBTransaction {
             jgLog.trace("Committing Transaction");
             transaction.commit();
             jgLog.trace("Transaction Committed");
-
-            // Expire the cache after a transaction commit
-            // CacheManager cm = database.getCacheManager();
-            // cm.expireCache();
         } catch (Exception e) {
             throw new DBException(e);
         }

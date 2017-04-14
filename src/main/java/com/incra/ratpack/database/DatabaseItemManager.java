@@ -4,7 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * @author Jeff Risberg
+ * @since late 2016
  */
 public class DatabaseItemManager {
     private static Logger jgLog = LoggerFactory.getLogger(DatabaseItemManager.class);

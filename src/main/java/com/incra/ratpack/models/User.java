@@ -1,11 +1,13 @@
 package com.incra.ratpack.models;
 
+import com.google.common.collect.Maps;
 import com.incra.ratpack.database.DatedDatabaseItem;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Map;
 
 /**
  * @author Jeff Risberg
@@ -41,5 +43,15 @@ public class User extends DatedDatabaseItem {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Map<String, Object> asMap() {
+        Map<String, Object> result = Maps.newHashMap();
+
+        result.put("id", getId());
+        result.put("username", getUsername());
+        result.put("email", getEmail());
+
+        return result;
     }
 }

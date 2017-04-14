@@ -1,9 +1,8 @@
 package com.incra.ratpack.handlers;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.database.DatabaseItemManager;
+import com.incra.ratpack.models.Event;
 import com.incra.ratpack.models.User;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
@@ -13,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ratpack.jackson.Jackson.json;
 
@@ -40,7 +40,7 @@ public class UserHandler extends BaseHandler implements Handler {
         String username = ctx.getRequest().getQueryParams()
                 .getOrDefault("username", "Han Solo");
         String email = ctx.getRequest().getQueryParams()
-                .getOrDefault("username", "han@rebels.org");
+                .getOrDefault("email", "han@rebels.org");
 
         Blocking.get(() -> {
             DBTransaction dbTransaction = dbManager.getTransaction();
@@ -63,18 +63,18 @@ public class UserHandler extends BaseHandler implements Handler {
 
             List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
 
-            List<Map<String, String>> userList = Lists.newArrayList();
-            for (User user : listUsers) {
-                Map<String, String> userAsMap = Maps.newHashMap();
-                userAsMap.put("id", "" + user.getId());
-                userAsMap.put("username", user.getUsername());
-                userAsMap.put("email", user.getEmail());
-                userList.add(userAsMap);
-            }
+            List<Map<String, Object>> userList = listUsers.stream()
+                    .map(m -> m.asMap())
+                    .collect(Collectors.toList());
+
+            Event event = new Event("FETCH", "USERS");
+            dbTransaction.create(event);
+
             dbTransaction.commit();
 
             return userList;
-        }).then(personList -> ctx.render(json(personList)));
+        }).then(personList ->
+                ctx.render(json(personList)));
     }
 }
 

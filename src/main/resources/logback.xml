@@ -6,8 +6,8 @@
     </encoder>
   </appender>
 
-  <!--logger name="org.pac4j" level="DEBUG" /-->
   <logger name="ratpack.pac4j" level="DEBUG" />
+  <logger name="com.incra.ratpack" level="DEBUG" />
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />
