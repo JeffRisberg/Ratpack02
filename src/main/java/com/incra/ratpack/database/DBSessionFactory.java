@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @author Jeff Risberg
+ * @since late 2016
  */
 public class DBSessionFactory {
     private static Logger jgLog = LoggerFactory.getLogger(DBSessionFactory.class);

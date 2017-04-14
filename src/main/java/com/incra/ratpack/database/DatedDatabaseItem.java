@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract database item with dateCreated and lastUpdated fields.
+ *
+ * @author Jeff Risberg
+ * @since late 2016
  */
 @MappedSuperclass
 public abstract class DatedDatabaseItem extends DatabaseItem {

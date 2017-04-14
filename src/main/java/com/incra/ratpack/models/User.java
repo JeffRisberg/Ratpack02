@@ -1,5 +1,7 @@
 package com.incra.ratpack.models;
 
+import com.incra.ratpack.database.DatedDatabaseItem;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,31 +12,14 @@ import javax.persistence.Id;
  * @since 05/30/16
  */
 @Entity
-public class User {
-    @Id
-    @GeneratedValue
-    protected Long id;
-
-    @Column
+public class User extends DatedDatabaseItem {
+    @Column(name="username")
     protected String username;
-    @Column
+
+    @Column(name="email")
     protected String email;
 
     public User() {
-    }
-
-    public User(Long id, String username, String email) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsername() {
