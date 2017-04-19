@@ -2,6 +2,7 @@ package com.incra.ratpack.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ratpack.handling.Context;
 
 /**
  * @author Jeff Risberg
@@ -31,8 +32,8 @@ public class DatabaseItemManager {
         return instance;
     }
 
-    public DBTransaction getTransaction() throws DBException {
+    public DBTransaction getTransaction(Context ctx) throws DBException {
         // start a transaction here
-        return DBSessionFactory.getInstance().getTransaction();
+        return DBSessionFactory.getInstance(ctx).getTransaction(ctx);
     }
 }

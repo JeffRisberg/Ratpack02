@@ -2,12 +2,15 @@ package com.incra.ratpack.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ratpack.handling.Context;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import javax.sql.DataSource;
 
 /**
  * @author Jeff Risberg
@@ -35,15 +38,20 @@ public class DBSessionFactory {
         throw new IllegalArgumentException("DBSessionFactory: no argument constructor not allowed");
     }
 
-    public DBSessionFactory(String datasourceName) throws DBException {
+    public DBSessionFactory(String datasourceName, Context ctx) throws DBException {
         this.datasourceName = datasourceName;
 
-        instantiateSessionFactory();
+        instantiateSessionFactory(ctx);
     }
 
-    protected void instantiateSessionFactory() throws DBException {
+    protected void instantiateSessionFactory(Context ctx) throws DBException {
         try {
-            emf = Persistence.createEntityManagerFactory(datasourceName);
+            DataSource dataSource = ctx.get(DataSource.class);
+            Properties jpaProperties = new Properties();
+
+            jpaProperties.put("hibernate.connection.datasource", dataSource);
+
+            emf = Persistence.createEntityManagerFactory(datasourceName, jpaProperties);
         } catch (Exception e) {
             e.printStackTrace();
             throw new DBException(e);
@@ -55,9 +63,9 @@ public class DBSessionFactory {
      *
      * @return DBSessionFactory
      */
-    public static synchronized DBSessionFactory getInstance() throws DBException {
+    public static synchronized DBSessionFactory getInstance(Context ctx) throws DBException {
         try {
-            return getInstance("ratpack-jpa");
+            return getInstance("ratpack-jpa", ctx);
         } catch (Exception e) {
             throw new DBException(e);
         }
@@ -70,21 +78,21 @@ public class DBSessionFactory {
      * @param datasourceName The datasource name
      * @return DBSessionFactory
      */
-    public static synchronized DBSessionFactory getInstance(String datasourceName) throws DBException {
+    public static synchronized DBSessionFactory getInstance(String datasourceName, Context ctx) throws DBException {
         DBSessionFactory sessionFactory = datasources.get(datasourceName);
 
         if (sessionFactory == null) {
-            sessionFactory = setupSessionFactory(datasourceName);
+            sessionFactory = setupSessionFactory(datasourceName, ctx);
         }
 
         return sessionFactory;
     }
 
-    private static DBSessionFactory setupSessionFactory(String datasourceName) throws DBException {
+    private static DBSessionFactory setupSessionFactory(String datasourceName, Context ctx) throws DBException {
         DBSessionFactory datasource;
 
         try {
-            datasource = new DBSessionFactory(datasourceName);
+            datasource = new DBSessionFactory(datasourceName, ctx);
             datasources.put(datasourceName, datasource);
         } catch (Exception e) {
             throw new DBException(e);
@@ -108,12 +116,12 @@ public class DBSessionFactory {
      * @return DBTransaction
      * @throws DBException on database exception.
      */
-    public synchronized DBTransaction getTransaction() throws DBException {
+    public synchronized DBTransaction getTransaction(Context ctx) throws DBException {
         DBTransaction dbTransaction = transaction.get();
 
         jgLog.trace("Getting JpaTransaction");
         if (dbTransaction == null) {
-            dbTransaction = createTransaction();
+            dbTransaction = createTransaction(ctx);
             transaction.set(dbTransaction);
         }
         return dbTransaction;
@@ -144,7 +152,7 @@ public class DBSessionFactory {
      * @throws DBException when an exception is encountered.
      */
     public void commitTransaction() throws DBException {
-        DBTransaction dbTransaction = getTransaction();
+        DBTransaction dbTransaction = getTransaction(null);
 
         jgLog.trace("Committing JpaTransaction");
         //TODO - consider checking isActive() and isOpen(), for now minimize differences
@@ -163,7 +171,7 @@ public class DBSessionFactory {
      * @return DBTransaction
      * @throws DBException
      */
-    private DBTransaction createTransaction() throws DBException {
+    private DBTransaction createTransaction(Context ctx) throws DBException {
         DBTransaction dbTransaction = new DBTransaction(getEntityManager());
         dbTransaction.begin();
         return dbTransaction;

@@ -41,7 +41,7 @@ public class MetricHandler extends BaseHandler implements Handler {
                 .getOrDefault("name", "ClickCount");
 
         Blocking.get(() -> {
-            DBTransaction dbTransaction = dbManager.getTransaction();
+            DBTransaction dbTransaction = dbManager.getTransaction(ctx);
 
             dbTransaction.create(new Metric(name));
             dbTransaction.commit();
@@ -57,7 +57,7 @@ public class MetricHandler extends BaseHandler implements Handler {
         DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
 
         Blocking.get(() -> {
-            DBTransaction dbTransaction = dbManager.getTransaction();
+            DBTransaction dbTransaction = dbManager.getTransaction(ctx);
 
             List<Metric> listMetrics = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
 

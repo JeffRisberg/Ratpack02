@@ -23,7 +23,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: io.ratpack:ratpack-core:1.4.5" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-core:1.4.6" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.6.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.6.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.6.Final" level="project" />
@@ -45,13 +45,13 @@
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.15" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.7.5" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: io.ratpack:ratpack-guice:1.4.5" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-guice:1.4.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject:guice:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-multibindings:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: io.ratpack:ratpack-jackson:0.9.17" level="project" />
-    <orderEntry type="library" name="Maven: io.ratpack:ratpack-hikari:1.4.5" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-hikari:1.4.6" level="project" />
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.3.5" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.0.13" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.0.13" level="project" />

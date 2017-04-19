@@ -43,7 +43,7 @@ public class UserHandler extends BaseHandler implements Handler {
                 .getOrDefault("email", "han@rebels.org");
 
         Blocking.get(() -> {
-            DBTransaction dbTransaction = dbManager.getTransaction();
+            DBTransaction dbTransaction = dbManager.getTransaction(ctx);
 
             dbTransaction.create(new User(username, email));
             dbTransaction.commit();
@@ -59,7 +59,7 @@ public class UserHandler extends BaseHandler implements Handler {
         DatabaseItemManager dbManager = DatabaseItemManager.getInstance();
 
         Blocking.get(() -> {
-            DBTransaction dbTransaction = dbManager.getTransaction();
+            DBTransaction dbTransaction = dbManager.getTransaction(ctx);
 
             List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
 
