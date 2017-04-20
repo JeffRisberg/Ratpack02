@@ -5,64 +5,45 @@ package com.incra.ratpack.config;
  * @since 12/01/16
  */
 public class DatabaseConfig {
-    protected String host = "localhost";
-    protected String user = "root";
+    protected String server = "localhost";
+    protected Integer portNumber = 3000;
+    protected String databaseName = "myDB";
+    protected String username = "root";
     protected String password;
-    protected String db = "myDB";
-    protected Integer port;
 
     public DatabaseConfig() {
     }
 
-    public DatabaseConfig(String host, String user, String password, String db, Integer port) {
-        this.host = host;
-        this.user = user;
+    public DatabaseConfig(String server, Integer portNumber, String databaseName, String username, String password) {
+        this.server = server;
+        this.portNumber = portNumber;
+        this.databaseName = databaseName;
+        this.username = username;
         this.password = password;
-        this.db = db;
-        this.port = port;
     }
 
-    public String getHost() {
-        return host;
+    public String getServer() {
+        return server;
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public Integer getPortNumber() {
+        return portNumber;
     }
 
-    public String getUser() {
-        return user;
+    public String getDatabaseName() {
+        return databaseName;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getDb() {
-        return db;
-    }
-
-    public void setDb(String db) {
-        this.db = db;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
     public String toString() {
-        return "Database " + this.host + " db " + this.db;
+        return "DatabaseConfig(server=" + this.server + ", username=" + this.username +
+                ", databaseName=" + this.databaseName + ", portNumber=" + this.portNumber + ")";
     }
 }

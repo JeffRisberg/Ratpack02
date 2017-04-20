@@ -11,6 +11,7 @@ import ratpack.guice.Guice;
 import ratpack.hikari.HikariModule;
 import ratpack.server.BaseDir;
 import ratpack.server.RatpackServer;
+import ratpack.server.ServerConfig;
 import ratpack.service.Service;
 import ratpack.service.StartEvent;
 
@@ -24,55 +25,59 @@ public class Ratpack02 {
         RatpackServer.start(spec -> spec
                 .serverConfig(ctx -> {
                             ctx.baseDir(BaseDir.find());
-                            ctx.json("DatabaseConfig.json");
-                            ctx.require("/", DatabaseConfig.class);
+                            ctx.json("databaseConfig.json");
+                            ctx.require("/database", DatabaseConfig.class);
                         }
                 )
-                .registry(Guice.registry(bindingsSpec ->
-                        bindingsSpec
-                                .module(HikariModule.class, c -> {
-                                    c.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-                                    c.addDataSourceProperty("URL", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-                                    c.setUsername("sa");
-                                    c.setPassword("");
-                                })
-                                .module(UserModule.class)
-                                .module(MetricModule.class)
-                                .bindInstance(new Service() {
-                                    @Override
-                                    public void onStart(StartEvent event) throws Exception {
-                                        DataSource dataSource = event.getRegistry().get(DataSource.class);
-                                        try (Connection connection = dataSource.getConnection()) {
+                .registry(Guice.registry(bindingsSpec -> {
+                    ServerConfig serverConfig = bindingsSpec.getServerConfig();
+                    DatabaseConfig databaseConfig = serverConfig.get("/database", DatabaseConfig.class);
 
-                                            connection.createStatement()
-                                                    .execute("CREATE TABLE `USER` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                                                            "`USERNAME` VARCHAR(255), " +
-                                                            "`EMAIL` VARCHAR(255), " +
-                                                            "DATE_CREATED DATE, " +
-                                                            "LAST_UPDATED DATE);");
-                                            connection.createStatement()
-                                                    .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Luke Daley','luke@gmail.com')");
-                                            connection.createStatement()
-                                                    .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Rob Fletch','rob@gmail.com')");
-                                            connection.createStatement()
-                                                    .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Dan Woods','dan@gmail.com')");
+                    bindingsSpec
+                            .module(HikariModule.class, config -> {
+                                config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
+                                config.addDataSourceProperty("URL", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+                                config.setUsername(databaseConfig.getUsername());
+                                config.setPassword(databaseConfig.getPassword());
+                            })
+                            .module(UserModule.class)
+                            .module(MetricModule.class)
+                            .bindInstance(new Service() {
+                                @Override
+                                public void onStart(StartEvent event) throws Exception {
+                                    DataSource dataSource = event.getRegistry().get(DataSource.class);
+                                    try (Connection connection = dataSource.getConnection()) {
 
-                                            connection.createStatement()
-                                                    .execute("CREATE TABLE `EVENT` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                                                            "`TYPE` VARCHAR(255), " +
-                                                            "`DETAIL` VARCHAR(255), " +
-                                                            "DATE_CREATED DATE, " +
-                                                            "LAST_UPDATED DATE);");
+                                        connection.createStatement()
+                                                .execute("CREATE TABLE `USER` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
+                                                        "`USERNAME` VARCHAR(255), " +
+                                                        "`EMAIL` VARCHAR(255), " +
+                                                        "DATE_CREATED DATE, " +
+                                                        "LAST_UPDATED DATE);");
+                                        connection.createStatement()
+                                                .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Luke Daley','luke@gmail.com')");
+                                        connection.createStatement()
+                                                .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Rob Fletch','rob@gmail.com')");
+                                        connection.createStatement()
+                                                .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Dan Woods','dan@gmail.com')");
 
-                                            connection.createStatement()
-                                                    .execute("CREATE TABLE `METRIC` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                                                            "`NAME` VARCHAR(255), " +
-                                                            "DATE_CREATED DATE, " +
-                                                            "LAST_UPDATED DATE);");
-                                            LOGGER.debug("Database schema and sample content set up");
-                                        }
+                                        connection.createStatement()
+                                                .execute("CREATE TABLE `EVENT` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
+                                                        "`TYPE` VARCHAR(255), " +
+                                                        "`DETAIL` VARCHAR(255), " +
+                                                        "DATE_CREATED DATE, " +
+                                                        "LAST_UPDATED DATE);");
+
+                                        connection.createStatement()
+                                                .execute("CREATE TABLE `METRIC` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
+                                                        "`NAME` VARCHAR(255), " +
+                                                        "DATE_CREATED DATE, " +
+                                                        "LAST_UPDATED DATE);");
+                                        LOGGER.debug("Database schema and sample content set up");
                                     }
-                                })))
+                                }
+                            });
+                }))
                 .handlers(chain -> chain
                         .path("events", ctx -> ctx.byMethod(eventSpec ->
                                 eventSpec
@@ -82,6 +87,7 @@ public class Ratpack02 {
 
                         .path("users", UserHandler.class)
                         .path("metrics", MetricHandler.class)
+                        .all(ctx -> ctx.render("root handler!"))
                 )
         );
     }

@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 /**
- * @author jeff
- * @since 4/13/17
+ * @author Jeff Risberg
+ * @since 12/13/16
  */
 public class BaseHandler {
 
