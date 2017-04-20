@@ -39,8 +39,8 @@ public class Ratpack02 {
                                             connection.createStatement()
                                                     .execute("CREATE TABLE `USER` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
                                                             "`USERNAME` VARCHAR(255), " +
-                                                            "`EMAIL` VARCHAR(255)," +
-                                                            "DATE_CREATED DATE," +
+                                                            "`EMAIL` VARCHAR(255), " +
+                                                            "DATE_CREATED DATE, " +
                                                             "LAST_UPDATED DATE);");
                                             connection.createStatement()
                                                     .execute("INSERT INTO USER (USERNAME, EMAIL) VALUES('Luke Daley','luke@gmail.com')");
@@ -52,14 +52,14 @@ public class Ratpack02 {
                                             connection.createStatement()
                                                     .execute("CREATE TABLE `EVENT` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
                                                             "`TYPE` VARCHAR(255), " +
-                                                            "`DETAIL` VARCHAR(255)," +
-                                                            "DATE_CREATED DATE," +
+                                                            "`DETAIL` VARCHAR(255), " +
+                                                            "DATE_CREATED DATE, " +
                                                             "LAST_UPDATED DATE);");
 
                                             connection.createStatement()
                                                     .execute("CREATE TABLE `METRIC` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
                                                             "`NAME` VARCHAR(255), " +
-                                                            "DATE_CREATED DATE," +
+                                                            "DATE_CREATED DATE, " +
                                                             "LAST_UPDATED DATE);");
                                             LOGGER.debug("Database schema and sample content set up");
                                         }

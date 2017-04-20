@@ -2,15 +2,14 @@ package com.incra.ratpack.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ratpack.handling.Context;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import javax.sql.DataSource;
 
 /**
  * @author Jeff Risberg
@@ -19,14 +18,13 @@ import javax.sql.DataSource;
 public class DBSessionFactory {
     private static Logger jgLog = LoggerFactory.getLogger(DBSessionFactory.class);
 
-    // List of all the existing instances
-    private static Map<String, DBSessionFactory> datasources = new HashMap<String, DBSessionFactory>();
+    // Map of all the existing sessionFactory instances
+    private static Map<DBSessionFactoryId, DBSessionFactory> sessionFactoryMap =
+            new HashMap<DBSessionFactoryId, DBSessionFactory>();
 
-    // Persistence unit name
-    protected String datasourceName;
+    protected DataSource dataSource;
 
-    // The actual database name
-    protected String databaseName;
+    protected String persistanceUnitName;
 
     private EntityManagerFactory emf;
 
@@ -38,35 +36,17 @@ public class DBSessionFactory {
         throw new IllegalArgumentException("DBSessionFactory: no argument constructor not allowed");
     }
 
-    public DBSessionFactory(String datasourceName, Context ctx) throws DBException {
-        this.datasourceName = datasourceName;
+    public DBSessionFactory(DataSource dataSource, String persistanceUnitName) throws DBException {
+        this.dataSource = dataSource;
+        this.persistanceUnitName = persistanceUnitName;
 
-        instantiateSessionFactory(ctx);
-    }
-
-    protected void instantiateSessionFactory(Context ctx) throws DBException {
         try {
-            DataSource dataSource = ctx.get(DataSource.class);
             Properties jpaProperties = new Properties();
-
             jpaProperties.put("hibernate.connection.datasource", dataSource);
 
-            emf = Persistence.createEntityManagerFactory(datasourceName, jpaProperties);
+            emf = Persistence.createEntityManagerFactory(persistanceUnitName, jpaProperties);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new DBException(e);
-        }
-    }
-
-    /**
-     * Returns the default DBSessionFactory instance.
-     *
-     * @return DBSessionFactory
-     */
-    public static synchronized DBSessionFactory getInstance(Context ctx) throws DBException {
-        try {
-            return getInstance("ratpack-jpa", ctx);
-        } catch (Exception e) {
             throw new DBException(e);
         }
     }
@@ -75,38 +55,32 @@ public class DBSessionFactory {
      * Obtains the DBSessionFactory instance for the given datasource name.  Check the map for the datasource.
      * Instantiate a new one, if necessary
      *
-     * @param datasourceName The datasource name
+     * @param persistanceUnitName The persistanceUnit name
      * @return DBSessionFactory
      */
-    public static synchronized DBSessionFactory getInstance(String datasourceName, Context ctx) throws DBException {
-        DBSessionFactory sessionFactory = datasources.get(datasourceName);
+    public static synchronized DBSessionFactory getInstance(DataSource dataSource, String persistanceUnitName) throws DBException {
+
+        DBSessionFactoryId sessionFactoryId = new DBSessionFactoryId(dataSource, persistanceUnitName);
+        DBSessionFactory sessionFactory = sessionFactoryMap.get(sessionFactoryId);
 
         if (sessionFactory == null) {
-            sessionFactory = setupSessionFactory(datasourceName, ctx);
+            try {
+                sessionFactory = new DBSessionFactory(dataSource, persistanceUnitName);
+                sessionFactoryMap.put(sessionFactoryId, sessionFactory);
+            } catch (Exception e) {
+                throw new DBException(e);
+            }
         }
 
         return sessionFactory;
     }
 
-    private static DBSessionFactory setupSessionFactory(String datasourceName, Context ctx) throws DBException {
-        DBSessionFactory datasource;
-
-        try {
-            datasource = new DBSessionFactory(datasourceName, ctx);
-            datasources.put(datasourceName, datasource);
-        } catch (Exception e) {
-            throw new DBException(e);
-        }
-
-        return datasource;
+    public DataSource getDataSource() {
+        return dataSource;
     }
 
-    public String getDatasourceName() {
-        return datasourceName;
-    }
-
-    public String getDatabaseName() {
-        return databaseName;
+    public String getPersistanceUnitName() {
+        return persistanceUnitName;
     }
 
     /**
@@ -116,12 +90,12 @@ public class DBSessionFactory {
      * @return DBTransaction
      * @throws DBException on database exception.
      */
-    public synchronized DBTransaction getTransaction(Context ctx) throws DBException {
+    public synchronized DBTransaction getTransaction() throws DBException {
         DBTransaction dbTransaction = transaction.get();
 
         jgLog.trace("Getting JpaTransaction");
         if (dbTransaction == null) {
-            dbTransaction = createTransaction(ctx);
+            dbTransaction = createTransaction();
             transaction.set(dbTransaction);
         }
         return dbTransaction;
@@ -152,7 +126,7 @@ public class DBSessionFactory {
      * @throws DBException when an exception is encountered.
      */
     public void commitTransaction() throws DBException {
-        DBTransaction dbTransaction = getTransaction(null);
+        DBTransaction dbTransaction = getTransaction();
 
         jgLog.trace("Committing JpaTransaction");
         //TODO - consider checking isActive() and isOpen(), for now minimize differences
@@ -171,7 +145,7 @@ public class DBSessionFactory {
      * @return DBTransaction
      * @throws DBException
      */
-    private DBTransaction createTransaction(Context ctx) throws DBException {
+    private DBTransaction createTransaction() throws DBException {
         DBTransaction dbTransaction = new DBTransaction(getEntityManager());
         dbTransaction.begin();
         return dbTransaction;

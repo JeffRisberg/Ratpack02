@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.handling.Context;
 
+import javax.sql.DataSource;
+
 /**
  * @author Jeff Risberg
  * @since late 2016
@@ -13,9 +15,10 @@ public class DatabaseItemManager {
 
     private static DatabaseItemManager instance;
 
-    private DBTransaction dbTransaction;
+    private Context ctx;
 
-    protected DatabaseItemManager() {
+    protected DatabaseItemManager(Context ctx) {
+        this.ctx = ctx;
     }
 
     /**
@@ -25,15 +28,21 @@ public class DatabaseItemManager {
      * @return instance of DatabaseItemManager
      * @throws DBException if DBSessionFactory cannot be accessed
      */
-    public static synchronized DatabaseItemManager getInstance() throws DBException {
+    public static synchronized DatabaseItemManager getInstance(Context ctx) throws DBException {
         if (instance == null) {
-            instance = new DatabaseItemManager();
+            instance = new DatabaseItemManager(ctx);
+            jgLog.debug("Created a DatabaseItemManager");
         }
         return instance;
     }
 
-    public DBTransaction getTransaction(Context ctx) throws DBException {
-        // start a transaction here
-        return DBSessionFactory.getInstance(ctx).getTransaction(ctx);
+    /**
+     * Set up a DBSessionFactory for this pair of (dataSource, persistanceUnitName) if not already
+     * created, and then get a transaction from it.
+     */
+    public DBTransaction getTransaction(DataSource dataSource, String persistanceUnitName) throws DBException {
+        DBSessionFactory sessionFactory = DBSessionFactory.getInstance(dataSource, persistanceUnitName);
+
+        return sessionFactory.getTransaction();
     }
 }

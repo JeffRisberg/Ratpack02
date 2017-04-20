@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public class BaseHandler {
 
+    protected static String persistanceUnitName = "ratpack-jpa";
+
     protected static Map<String, Object> getResponseMap(Boolean status, String message) {
         Map<String, Object> response = Maps.newHashMap();
         response.put("success", status);
