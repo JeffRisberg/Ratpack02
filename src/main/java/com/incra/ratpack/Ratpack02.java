@@ -1,5 +1,6 @@
 package com.incra.ratpack;
 
+import com.incra.ratpack.config.DatabaseConfig;
 import com.incra.ratpack.handlers.MetricHandler;
 import com.incra.ratpack.handlers.UserHandler;
 import com.incra.ratpack.modules.MetricModule;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.guice.Guice;
 import ratpack.hikari.HikariModule;
+import ratpack.server.BaseDir;
 import ratpack.server.RatpackServer;
 import ratpack.service.Service;
 import ratpack.service.StartEvent;
@@ -20,6 +22,12 @@ public class Ratpack02 {
 
     public static void main(String[] args) throws Exception {
         RatpackServer.start(spec -> spec
+                .serverConfig(ctx -> {
+                            ctx.baseDir(BaseDir.find());
+                            ctx.json("DatabaseConfig.json");
+                            ctx.require("/", DatabaseConfig.class);
+                        }
+                )
                 .registry(Guice.registry(bindingsSpec ->
                         bindingsSpec
                                 .module(HikariModule.class, c -> {
