@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import ratpack.guice.Guice;
 import ratpack.hikari.HikariModule;
 import ratpack.server.RatpackServer;
-import ratpack.server.Service;
-import ratpack.server.StartEvent;
+import ratpack.service.Service;
+import ratpack.service.StartEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -3,12 +3,11 @@ package com.incra.ratpack.database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.BatchUpdateException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A DBTransaction is a set of access methods around an entity manager and the current transaction.
@@ -143,7 +142,7 @@ public class DBTransaction {
      * Refreshes an object with data from the database
      *
      * @param object to refresh
-     * @throws DBException
+     * @throws DBException on any error
      */
     public <T> T refresh(T object) throws DBException {
         try {
@@ -223,6 +222,7 @@ public class DBTransaction {
         int offset = 0;
         int limit = 0;
 
+        //noinspection unchecked
         return getQueryResults(getJPAQuery(em, queryString, bindVariables), offset, limit);
     }
 
@@ -231,8 +231,8 @@ public class DBTransaction {
      *
      * @param queryString   The SQL query string to execute.
      * @param bindVariables A List of bound variables associated with the query string.
-     * @param offset
-     * @param limit
+     * @param offset        the first line to be fetched
+     * @param limit         the max records to be fetched
      * @return The result set List.
      */
     public <T> List<T> getObjects(Class<T> classObject, String queryString, List bindVariables, int offset, int limit) throws DBException {
@@ -252,7 +252,7 @@ public class DBTransaction {
         try {
             if (offset > 0) query.setFirstResult(offset);
             if (limit > 0) query.setMaxResults(limit);
-            @SuppressWarnings({"unchecked"})
+            //noinspection unchecked
             List<T> results = (List<T>) query.getResultList();
 
             for (T object : results) {
@@ -378,10 +378,10 @@ public class DBTransaction {
 
     // Private helper method that checks that the database is in a valid
     // state to execute against.  Throws an exception if it is not.
-    protected void checkDatabase() throws DBException {
+    private void checkDatabase() throws DBException {
         if (em == null || !em.isOpen()) {
-            jgLog.error("em: " + em);
-            jgLog.error("em.isOpen()? " + em.isOpen());
+            jgLog.debug("em: " + em);
+            jgLog.debug("em.isOpen()? " + em.isOpen());
             throw new DBException("Database is closed");
         }
         if (!transaction.isActive()) {
