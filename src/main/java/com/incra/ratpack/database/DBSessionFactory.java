@@ -146,7 +146,7 @@ public class DBSessionFactory {
      * @throws DBException
      */
     private DBTransaction createTransaction() throws DBException {
-        DBTransaction dbTransaction = new DBTransaction(getEntityManager());
+        DBTransaction dbTransaction = new DBTransaction(getEntityManager(), this);
         dbTransaction.begin();
         return dbTransaction;
     }

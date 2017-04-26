@@ -19,13 +19,15 @@ public class DBTransaction {
     private static Logger jgLog = LoggerFactory.getLogger(DBTransaction.class);
 
     private EntityManager em;
+    private DBSessionFactory sessionFactory;
     private EntityTransaction transaction;
 
     protected DBTransaction() {
     }
 
-    public DBTransaction(EntityManager em) {
+    public DBTransaction(EntityManager em, DBSessionFactory sessionFactory) {
         this.em = em;
+        this.sessionFactory = sessionFactory;
         this.transaction = em.getTransaction();
     }
 
@@ -50,6 +52,16 @@ public class DBTransaction {
 
         try {
             transaction.rollback();
+        } catch (Exception e) {
+            throw new DBException(e);
+        }
+    }
+
+    public void close() throws DBException {
+        checkDatabase();
+
+        try {
+            this.sessionFactory.closeTransaction();
         } catch (Exception e) {
             throw new DBException(e);
         }

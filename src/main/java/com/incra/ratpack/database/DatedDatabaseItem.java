@@ -1,11 +1,12 @@
 package com.incra.ratpack.database;
 
-import java.util.Calendar;
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Abstract database item with dateCreated and lastUpdated fields.
