@@ -1,7 +1,7 @@
 package com.incra.ratpack.handlers;
 
+import com.incra.ratpack.database.DBService;
 import com.incra.ratpack.database.DBTransaction;
-import com.incra.ratpack.database.DatabaseItemManager;
 import com.incra.ratpack.models.Event;
 import com.incra.ratpack.models.User;
 import ratpack.exec.Blocking;
@@ -10,10 +10,9 @@ import ratpack.handling.Handler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static ratpack.jackson.Jackson.json;
 
@@ -24,8 +23,11 @@ import static ratpack.jackson.Jackson.json;
 @Singleton
 public class UserHandler extends BaseHandler implements Handler {
 
+    protected DBService jpaHikariService;
+
     @Inject
-    public UserHandler() {
+    public UserHandler(DBService jpaHikariService) {
+        this.jpaHikariService = jpaHikariService;
     }
 
     @Override
@@ -37,15 +39,13 @@ public class UserHandler extends BaseHandler implements Handler {
     }
 
     private void handlePost(Context ctx) throws Exception {
-        DatabaseItemManager dbManager = DatabaseItemManager.getInstance(ctx);
         String username = ctx.getRequest().getQueryParams()
                 .getOrDefault("username", "Han Solo");
         String email = ctx.getRequest().getQueryParams()
                 .getOrDefault("email", "han@rebels.org");
 
         Blocking.get(() -> {
-            DataSource dataSource = ctx.get(DataSource.class);
-            DBTransaction dbTransaction = dbManager.getTransaction(dataSource, persistanceUnitName);
+            DBTransaction dbTransaction = jpaHikariService.getTransaction();
 
             dbTransaction.create(new User(username, email));
             dbTransaction.commit();
@@ -58,17 +58,11 @@ public class UserHandler extends BaseHandler implements Handler {
     }
 
     private void handleGet(Context ctx) throws Exception {
-        DatabaseItemManager dbManager = DatabaseItemManager.getInstance(ctx);
 
         Blocking.get(() -> {
-            DataSource dataSource = ctx.get(DataSource.class);
-            DBTransaction dbTransaction = dbManager.getTransaction(dataSource, persistanceUnitName);
+            DBTransaction dbTransaction = jpaHikariService.getTransaction();
 
-            List<User> listUsers = dbTransaction.getObjects(User.class, "Select u from User u", null);
-
-            List<Map<String, Object>> userList = listUsers.stream()
-                    .map(m -> m.asMap())
-                    .collect(Collectors.toList());
+            List<User> userList = dbTransaction.getObjects(User.class, "Select u from User u", null);
 
             Event event = new Event("FETCH", "USERS");
             dbTransaction.create(event);
@@ -76,8 +70,11 @@ public class UserHandler extends BaseHandler implements Handler {
             dbTransaction.commit();
 
             return userList;
-        }).then(personList ->
-                ctx.render(json(personList)));
+        }).then(userList -> {
+            Map response = new HashMap();
+            response.put("data", userList);
+            ctx.render(json(response));
+        });
     }
 }
 

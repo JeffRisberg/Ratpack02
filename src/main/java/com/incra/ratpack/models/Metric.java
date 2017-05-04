@@ -17,11 +17,15 @@ public class Metric extends DatedDatabaseItem {
     @Column()
     String name;
 
+    @Column()
+    Integer value;
+
     public Metric() {
     }
 
-    public Metric(String name) {
+    public Metric(String name, Integer value) {
         this.name = name;
+        this.value = value;
     }
 
     public String getName() {
@@ -32,12 +36,11 @@ public class Metric extends DatedDatabaseItem {
         this.name = name;
     }
 
-    public Map<String, Object> asMap() {
-        Map<String, Object> result = Maps.newHashMap();
+    public Integer getValue() {
+        return value;
+    }
 
-        result.put("id", getId());
-        result.put("name", getName());
-
-        return result;
+    public void setValue(Integer value) {
+        this.value = value;
     }
 }

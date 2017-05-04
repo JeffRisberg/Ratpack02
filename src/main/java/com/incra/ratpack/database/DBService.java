@@ -1,28 +1,25 @@
 package com.incra.ratpack.database;
 
+import com.google.inject.Inject;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ratpack.hikari.HikariService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
+ * The <i>DBService</i> is an extension of HikariService, and it provides JPA-based usage of Hikari.
+ * It manages the EntityManagerFactory, and the threadlocal entityManager and transaction.
+ *
  * @author Jeff Risberg
- * @since late 2016
+ * @since 05/02/17
  */
-public class DBSessionFactory {
-    private static Logger jgLog = LoggerFactory.getLogger(DBSessionFactory.class);
-
-    // Map of all the existing sessionFactory instances
-    private static Map<DBSessionFactoryId, DBSessionFactory> sessionFactoryMap =
-            new HashMap<DBSessionFactoryId, DBSessionFactory>();
-
-    protected DataSource dataSource;
+public class DBService extends HikariService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBService.class);
 
     protected String persistanceUnitName;
 
@@ -32,12 +29,13 @@ public class DBSessionFactory {
 
     private static final ThreadLocal<DBTransaction> transaction = new ThreadLocal<>();
 
-    protected DBSessionFactory() {
-        throw new IllegalArgumentException("DBSessionFactory: no argument constructor not allowed");
-    }
+    /**
+     * Constructor
+     */
+    @Inject
+    public DBService(HikariDataSource dataSource, String persistanceUnitName) throws DBException {
+        super(dataSource);
 
-    public DBSessionFactory(DataSource dataSource, String persistanceUnitName) throws DBException {
-        this.dataSource = dataSource;
         this.persistanceUnitName = persistanceUnitName;
 
         try {
@@ -49,34 +47,6 @@ public class DBSessionFactory {
             e.printStackTrace();
             throw new DBException(e);
         }
-    }
-
-    /**
-     * Obtains the DBSessionFactory instance for the given datasource name.  Check the map for the datasource.
-     * Instantiate a new one, if necessary
-     *
-     * @param persistanceUnitName The persistanceUnit name
-     * @return DBSessionFactory
-     */
-    public static synchronized DBSessionFactory getInstance(DataSource dataSource, String persistanceUnitName) throws DBException {
-
-        DBSessionFactoryId sessionFactoryId = new DBSessionFactoryId(dataSource, persistanceUnitName);
-        DBSessionFactory sessionFactory = sessionFactoryMap.get(sessionFactoryId);
-
-        if (sessionFactory == null) {
-            try {
-                sessionFactory = new DBSessionFactory(dataSource, persistanceUnitName);
-                sessionFactoryMap.put(sessionFactoryId, sessionFactory);
-            } catch (Exception e) {
-                throw new DBException(e);
-            }
-        }
-
-        return sessionFactory;
-    }
-
-    public DataSource getDataSource() {
-        return dataSource;
     }
 
     public String getPersistanceUnitName() {
@@ -93,7 +63,7 @@ public class DBSessionFactory {
     public synchronized DBTransaction getTransaction() throws DBException {
         DBTransaction dbTransaction = transaction.get();
 
-        jgLog.trace("Getting JpaTransaction");
+        LOGGER.info("Getting JpaTransaction");
         if (dbTransaction == null) {
             dbTransaction = createTransaction();
             transaction.set(dbTransaction);
@@ -110,10 +80,10 @@ public class DBSessionFactory {
     public synchronized void closeTransaction() throws DBException {
         EntityManager em = entityManager.get();
 
-        jgLog.trace("Closing EntityManager");
+        LOGGER.trace("Closing EntityManager");
         if (em != null) {
             em.close();
-            jgLog.trace("Closed EntityManager");
+            LOGGER.trace("Closed EntityManager");
         }
 
         transaction.set(null);
@@ -128,11 +98,11 @@ public class DBSessionFactory {
     public void commitTransaction() throws DBException {
         DBTransaction dbTransaction = getTransaction();
 
-        jgLog.trace("Committing JpaTransaction");
+        LOGGER.trace("Committing JpaTransaction");
         //TODO - consider checking isActive() and isOpen(), for now minimize differences
         if (dbTransaction != null && dbTransaction.isActive()) {
-            jgLog.trace("JpaTransaction isClosed? " + entityManager.get().isOpen());
-            jgLog.trace("JpaTransaction isActive? " + dbTransaction.isActive());
+            LOGGER.trace("JpaTransaction isClosed? " + entityManager.get().isOpen());
+            LOGGER.trace("JpaTransaction isActive? " + dbTransaction.isActive());
             dbTransaction.commit();
         }
     }
@@ -162,7 +132,7 @@ public class DBSessionFactory {
         try {
             return emf.createEntityManager();
         } catch (Exception e) {
-            jgLog.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DBException(e);
         }
     }

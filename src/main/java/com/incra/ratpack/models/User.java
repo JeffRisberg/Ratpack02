@@ -44,14 +44,4 @@ public class User extends DatedDatabaseItem {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public Map<String, Object> asMap() {
-        Map<String, Object> result = Maps.newHashMap();
-
-        result.put("id", getId());
-        result.put("username", getUsername());
-        result.put("email", getEmail());
-
-        return result;
-    }
 }

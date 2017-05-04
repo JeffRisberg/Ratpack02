@@ -17,7 +17,7 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 public abstract class DatabaseItem implements Serializable {
-    private static Logger jgLog = LoggerFactory.getLogger(DatabaseItem.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DatabaseItem.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

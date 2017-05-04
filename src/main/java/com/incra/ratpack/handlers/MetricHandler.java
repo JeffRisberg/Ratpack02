@@ -1,7 +1,7 @@
 package com.incra.ratpack.handlers;
 
 import com.incra.ratpack.database.DBTransaction;
-import com.incra.ratpack.database.DatabaseItemManager;
+import com.incra.ratpack.database.DBService;
 import com.incra.ratpack.models.Event;
 import com.incra.ratpack.models.Metric;
 import ratpack.exec.Blocking;
@@ -11,6 +11,7 @@ import ratpack.handling.Handler;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,8 +25,11 @@ import static ratpack.jackson.Jackson.json;
 @Singleton
 public class MetricHandler extends BaseHandler implements Handler {
 
+    protected DBService jpaHikariService;
+
     @Inject
-    public MetricHandler() {
+    public MetricHandler(DBService jpaHikariService) {
+        this.jpaHikariService = jpaHikariService;
     }
 
     @Override
@@ -37,15 +41,17 @@ public class MetricHandler extends BaseHandler implements Handler {
     }
 
     private void handlePost(Context ctx) throws Exception {
-        DatabaseItemManager dbManager = DatabaseItemManager.getInstance(ctx);
         String name = ctx.getRequest().getQueryParams()
                 .getOrDefault("name", "ClickCount");
+        String valueStr = ctx.getRequest().getQueryParams()
+                .getOrDefault("value", "0");
+        Integer value = Integer.parseInt(valueStr);
 
         Blocking.get(() -> {
             DataSource dataSource = ctx.get(DataSource.class);
-            DBTransaction dbTransaction = dbManager.getTransaction(dataSource, persistanceUnitName);
+            DBTransaction dbTransaction = jpaHikariService.getTransaction();
 
-            dbTransaction.create(new Metric(name));
+            dbTransaction.create(new Metric(name, value));
             dbTransaction.commit();
             return true;
         }).onError(t -> {
@@ -56,17 +62,11 @@ public class MetricHandler extends BaseHandler implements Handler {
     }
 
     private void handleGet(Context ctx) throws Exception {
-        DatabaseItemManager dbManager = DatabaseItemManager.getInstance(ctx);
-
         Blocking.get(() -> {
             DataSource dataSource = ctx.get(DataSource.class);
-            DBTransaction dbTransaction = dbManager.getTransaction(dataSource, persistanceUnitName);
+            DBTransaction dbTransaction = jpaHikariService.getTransaction();
 
-            List<Metric> listMetrics = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
-
-            List<Map<String, Object>> metricList = listMetrics.stream()
-                    .map(m -> m.asMap())
-                    .collect(Collectors.toList());
+            List<Metric> metricList = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
 
             Event event = new Event("FETCH", "METRICS");
             dbTransaction.create(event);
@@ -74,7 +74,10 @@ public class MetricHandler extends BaseHandler implements Handler {
             dbTransaction.commit();
 
             return metricList;
-        }).then(metricList ->
-                ctx.render(json(metricList)));
+        }).then(metricList -> {
+            Map response = new HashMap();
+            response.put("data", metricList);
+            ctx.render(json(response));
+        });
     }
 }

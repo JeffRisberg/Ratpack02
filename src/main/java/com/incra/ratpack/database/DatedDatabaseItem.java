@@ -16,7 +16,7 @@ import java.util.Date;
  */
 @MappedSuperclass
 public abstract class DatedDatabaseItem extends DatabaseItem {
-    private static Logger jgLog = LoggerFactory.getLogger(DatedDatabaseItem.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DatedDatabaseItem.class);
 
     @Column(name = "date_created", columnDefinition = "timestamp not null default now()")
     protected Date dateCreated = new Date();

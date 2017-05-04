@@ -16,18 +16,18 @@ import java.util.List;
  * @since late 2016
  */
 public class DBTransaction {
-    private static Logger jgLog = LoggerFactory.getLogger(DBTransaction.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DBTransaction.class);
 
     private EntityManager em;
-    private DBSessionFactory sessionFactory;
+    private DBService dbService;
     private EntityTransaction transaction;
 
     protected DBTransaction() {
     }
 
-    public DBTransaction(EntityManager em, DBSessionFactory sessionFactory) {
+    public DBTransaction(EntityManager em, DBService dbService) {
         this.em = em;
-        this.sessionFactory = sessionFactory;
+        this.dbService = dbService;
         this.transaction = em.getTransaction();
     }
 
@@ -39,9 +39,9 @@ public class DBTransaction {
         checkDatabase();
 
         try {
-            jgLog.trace("Committing Transaction");
+            LOGGER.trace("Committing Transaction");
             transaction.commit();
-            jgLog.trace("Transaction Committed");
+            LOGGER.trace("Transaction Committed");
         } catch (Exception e) {
             throw new DBException(e);
         }
@@ -61,7 +61,7 @@ public class DBTransaction {
         checkDatabase();
 
         try {
-            this.sessionFactory.closeTransaction();
+            this.dbService.closeTransaction();
         } catch (Exception e) {
             throw new DBException(e);
         }
@@ -110,7 +110,7 @@ public class DBTransaction {
         try {
             em.persist(object);
         } catch (Exception e) {
-            jgLog.error("DBTransaction.create()");
+            LOGGER.error("DBTransaction.create()");
             throw new DBException(e);
         }
     }
@@ -129,7 +129,7 @@ public class DBTransaction {
             //ignore update, changes are automatically committed.
             if (!em.contains(object)) em.refresh(object);
         } catch (Exception e) {
-            jgLog.error("DBTransaction.update()");
+            LOGGER.error("DBTransaction.update()");
             throw new DBException(e);
         }
     }
@@ -145,7 +145,7 @@ public class DBTransaction {
         try {
             em.remove(object);
         } catch (Exception e) {
-            jgLog.error("DBTransaction.delete()");
+            LOGGER.error("DBTransaction.delete()");
             throw new DBException(e);
         }
     }
@@ -160,7 +160,7 @@ public class DBTransaction {
         try {
             em.refresh(object);
         } catch (Exception e) {
-            jgLog.error("DBTransaction.refresh()");
+            LOGGER.error("DBTransaction.refresh()");
             throw new DBException(e.getMessage());
         }
         return object;
@@ -179,7 +179,7 @@ public class DBTransaction {
         try {
             return em.find(classObject, id);
         } catch (Exception e) {
-            jgLog.error("DBTransaction.getObjectById()");
+            LOGGER.error("DBTransaction.getObjectById()");
             throw new DBException(e);
         }
     }
@@ -271,7 +271,7 @@ public class DBTransaction {
                 returnObjects.add(object);
             }
         } catch (Exception e) {
-            jgLog.error("DBTransaction.getQueryResults()");
+            LOGGER.error("DBTransaction.getQueryResults()");
             throw new DBException(e);
         }
 
@@ -284,7 +284,7 @@ public class DBTransaction {
         try {
             query = database.createQuery(queryString);
         } catch (Exception e) {
-            jgLog.error("DBTransaction.getJPAQuery()");
+            LOGGER.error("DBTransaction.getJPAQuery()");
             throw new DBException(e);
         }
 
@@ -392,12 +392,12 @@ public class DBTransaction {
     // state to execute against.  Throws an exception if it is not.
     private void checkDatabase() throws DBException {
         if (em == null || !em.isOpen()) {
-            jgLog.debug("em: " + em);
-            jgLog.debug("em.isOpen()? " + em.isOpen());
+            LOGGER.debug("em: " + em);
+            LOGGER.debug("em.isOpen()? " + em.isOpen());
             throw new DBException("Database is closed");
         }
         if (!transaction.isActive()) {
-            jgLog.debug("Starting transaction");
+            LOGGER.debug("Starting transaction");
             transaction.begin();
         }
     }
