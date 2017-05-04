@@ -25,11 +25,11 @@ import static ratpack.jackson.Jackson.json;
 @Singleton
 public class MetricHandler extends BaseHandler implements Handler {
 
-    protected DBService jpaHikariService;
+    protected DBService dbService;
 
     @Inject
-    public MetricHandler(DBService jpaHikariService) {
-        this.jpaHikariService = jpaHikariService;
+    public MetricHandler(DBService dbService) {
+        this.dbService = dbService;
     }
 
     @Override
@@ -48,8 +48,7 @@ public class MetricHandler extends BaseHandler implements Handler {
         Integer value = Integer.parseInt(valueStr);
 
         Blocking.get(() -> {
-            DataSource dataSource = ctx.get(DataSource.class);
-            DBTransaction dbTransaction = jpaHikariService.getTransaction();
+            DBTransaction dbTransaction = dbService.getTransaction();
 
             dbTransaction.create(new Metric(name, value));
             dbTransaction.commit();
@@ -63,8 +62,7 @@ public class MetricHandler extends BaseHandler implements Handler {
 
     private void handleGet(Context ctx) throws Exception {
         Blocking.get(() -> {
-            DataSource dataSource = ctx.get(DataSource.class);
-            DBTransaction dbTransaction = jpaHikariService.getTransaction();
+            DBTransaction dbTransaction = dbService.getTransaction();
 
             List<Metric> metricList = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
 

@@ -23,11 +23,11 @@ import static ratpack.jackson.Jackson.json;
 @Singleton
 public class UserHandler extends BaseHandler implements Handler {
 
-    protected DBService jpaHikariService;
+    protected DBService dbService;
 
     @Inject
-    public UserHandler(DBService jpaHikariService) {
-        this.jpaHikariService = jpaHikariService;
+    public UserHandler(DBService dbService) {
+        this.dbService = dbService;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class UserHandler extends BaseHandler implements Handler {
                 .getOrDefault("email", "han@rebels.org");
 
         Blocking.get(() -> {
-            DBTransaction dbTransaction = jpaHikariService.getTransaction();
+            DBTransaction dbTransaction = dbService.getTransaction();
 
             dbTransaction.create(new User(username, email));
             dbTransaction.commit();
@@ -60,7 +60,7 @@ public class UserHandler extends BaseHandler implements Handler {
     private void handleGet(Context ctx) throws Exception {
 
         Blocking.get(() -> {
-            DBTransaction dbTransaction = jpaHikariService.getTransaction();
+            DBTransaction dbTransaction = dbService.getTransaction();
 
             List<User> userList = dbTransaction.getObjects(User.class, "Select u from User u", null);
 

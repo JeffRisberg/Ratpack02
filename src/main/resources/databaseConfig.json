@@ -1,8 +1,16 @@
 {
-  "database": {
+  "database1": {
     "server": "localhost",
     "portNumber": 3306,
     "username": "sa",
-    "password": ""
+    "password": "",
+    "databaseName": "primary"
+  },
+  "database2": {
+    "server": "localhost",
+    "portNumber": 3306,
+    "username": "sa",
+    "password": "",
+    "databaseName": "secondary"
   }
 }

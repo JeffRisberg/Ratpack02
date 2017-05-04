@@ -5,10 +5,7 @@ import com.incra.ratpack.config.DatabaseConfig;
 import com.incra.ratpack.database.DBModule;
 import com.incra.ratpack.handlers.MetricHandler;
 import com.incra.ratpack.handlers.UserHandler;
-import com.incra.ratpack.modules.MetricModule;
-import com.incra.ratpack.modules.MetricSerializerModule;
-import com.incra.ratpack.modules.UserModule;
-import com.incra.ratpack.modules.UserSerializerModule;
+import com.incra.ratpack.modules.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.guice.Guice;
@@ -34,7 +31,8 @@ public class Ratpack02 {
                 )
                 .registry(Guice.registry(bindingsSpec -> {
                     ServerConfig serverConfig = bindingsSpec.getServerConfig();
-                    DatabaseConfig databaseConfig = serverConfig.get("/database", DatabaseConfig.class);
+                    DatabaseConfig databaseConfig1 = serverConfig.get("/database1", DatabaseConfig.class);
+                    DatabaseConfig databaseConfig2 = serverConfig.get("/database2", DatabaseConfig.class);
 
                     bindingsSpec
                             .add(ObjectMapper.class, new ObjectMapper()
@@ -42,12 +40,23 @@ public class Ratpack02 {
                                     .registerModule(new MetricSerializerModule()));
 
                     bindingsSpec
-                            .module(DBModule.class, config -> {
+                            .module(PrimaryDatabaseModule.class, config -> {
+                                String url = "jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1";
+
                                 config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-                                config.addDataSourceProperty("URL", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-                                config.setUsername(databaseConfig.getUsername());
-                                config.setPassword(databaseConfig.getPassword());
-                                config.setPersistanceUnitName(databaseConfig.getPersistanceUnitName());
+                                config.addDataSourceProperty("URL", url);
+                                config.setUsername(databaseConfig1.getUsername());
+                                config.setPassword(databaseConfig1.getPassword());
+                                config.setPersistanceUnitName(databaseConfig1.getPersistanceUnitName());
+                            })
+                            .module(AlternateDatabaseModule.class, config -> {
+                                String url = "jdbc:h2:mem:test2;DB_CLOSE_DELAY=-1";
+
+                                config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
+                                config.addDataSourceProperty("URL", url);
+                                config.setUsername(databaseConfig2.getUsername());
+                                config.setPassword(databaseConfig2.getPassword());
+                                config.setPersistanceUnitName(databaseConfig2.getPersistanceUnitName());
                             })
                             .module(UserModule.class)
                             .module(UserModule.class)
