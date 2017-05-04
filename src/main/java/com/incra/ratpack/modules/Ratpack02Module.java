@@ -1,6 +1,7 @@
 package com.incra.ratpack.modules;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.incra.ratpack.binding.annotation.DB1;
 import com.incra.ratpack.binding.annotation.DB2;
 import com.incra.ratpack.config.DatabaseConfig;
@@ -12,7 +13,7 @@ import ratpack.server.ServerConfig;
  * @author Jeff Risberg
  * @since 05/04/17
  */
-public class Ratpack02Module extends ConfigurableModule {
+public class Ratpack02Module extends AbstractModule {
 
     private ServerConfig serverConfig;
     private DatabaseConfig databaseConfig1;
@@ -27,8 +28,8 @@ public class Ratpack02Module extends ConfigurableModule {
 
     @Override
     protected void configure() {
-        bind(DBService.class).annotatedWith(DB1.class).toProvider(new DBServiceProvider(databaseConfig1));
-        bind(DBService.class).annotatedWith(DB2.class).toProvider(new DBServiceProvider(databaseConfig2));
+        bind(DBService.class).annotatedWith(DB1.class).toProvider(new DBServiceProvider(databaseConfig1)).in(Scopes.SINGLETON);
+        bind(DBService.class).annotatedWith(DB2.class).toProvider(new DBServiceProvider(databaseConfig2)).in(Scopes.SINGLETON);
     }
 }
 
