@@ -30,8 +30,12 @@ public class UserSerializerModule extends SimpleModule {
                 jGen.writeNumberField("id", user.getId());
                 jGen.writeStringField("email", user.getEmail());
                 jGen.writeStringField("username", user.getUsername());
-                jGen.writeNumberField("dateCreated", user.getDateCreated().getTime());
-                jGen.writeNumberField("lastUpdated", user.getLastUpdated().getTime());
+                if (user.getDateCreated() != null) {
+                    jGen.writeNumberField("dateCreated", user.getDateCreated().getTime());
+                }
+                if (user.getLastUpdated() != null) {
+                    jGen.writeNumberField("lastUpdated", user.getLastUpdated().getTime());
+                }
                 jGen.writeEndObject();
             }
         });

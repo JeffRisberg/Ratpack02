@@ -31,8 +31,12 @@ public class MetricSerializerModule extends SimpleModule {
                 jGen.writeNumberField("id", metric.getId());
                 jGen.writeStringField("name", metric.getName());
                 jGen.writeNumberField("value", metric.getValue());
-                jGen.writeNumberField("dateCreated", metric.getDateCreated().getTime());
-                jGen.writeNumberField("lastUpdated", metric.getLastUpdated().getTime());
+                if (metric.getDateCreated() != null) {
+                    jGen.writeNumberField("dateCreated", metric.getDateCreated().getTime());
+                }
+                if (metric.getLastUpdated() != null) {
+                    jGen.writeNumberField("lastUpdated", metric.getLastUpdated().getTime());
+                }
                 jGen.writeEndObject();
             }
         });

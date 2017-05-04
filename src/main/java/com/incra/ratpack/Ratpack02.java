@@ -85,6 +85,10 @@ public class Ratpack02 {
                                                         "`VALUE` INTEGER, " +
                                                         "DATE_CREATED DATE, " +
                                                         "LAST_UPDATED DATE);");
+
+                                        connection.createStatement()
+                                                .execute("INSERT INTO `METRIC` (NAME, VALUE) VALUES('Clicks', 0);");
+
                                         LOGGER.debug("Database schema and sample content set up");
                                     }
                                 }
