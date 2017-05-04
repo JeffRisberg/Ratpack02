@@ -1,8 +1,6 @@
 package com.incra.ratpack.modules;
 
-import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.incra.ratpack.Ratpack02;
 import com.incra.ratpack.config.DatabaseConfig;
 import com.incra.ratpack.database.DBConfig;
 import com.incra.ratpack.database.DBException;
@@ -15,15 +13,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * @author jeff
- * @since 5/4/17
+ * @author Jeff Risberg
+ * @since 05/04/17
  */
 public class DBServiceProvider implements Provider<DBService> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DBServiceProvider.class);
 
     private DatabaseConfig databaseConfig;
 
-    @Inject
     public DBServiceProvider(DatabaseConfig databaseConfig) {
         this.databaseConfig = databaseConfig;
     }
@@ -76,16 +73,14 @@ public class DBServiceProvider implements Provider<DBService> {
                     .execute("INSERT INTO `METRIC` (NAME, VALUE) VALUES('Clicks', 0);");
 
             LOGGER.debug("Database schema and sample content set up for database " + databaseName);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         try {
             DBService dbService = new DBService(dataSource, persistanceUnitName);
             return dbService;
-        }
-        catch (DBException e) {
+        } catch (DBException e) {
             e.printStackTrace();
             return null;
         }

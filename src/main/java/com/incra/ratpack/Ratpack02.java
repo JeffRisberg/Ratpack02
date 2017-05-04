@@ -32,7 +32,7 @@ public class Ratpack02 {
                                     .registerModule(new MetricSerializerModule()));
 
                     bindingsSpec
-                            .add(Ratpack02Module.class, new Ratpack02Module(serverConfig));
+                            .module(new Ratpack02Module(serverConfig));
 
                     bindingsSpec
                             .module(UserModule.class)

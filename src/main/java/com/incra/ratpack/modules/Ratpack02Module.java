@@ -27,8 +27,6 @@ public class Ratpack02Module extends ConfigurableModule {
 
     @Override
     protected void configure() {
-        System.out.println("binding DBservices in Ratpack02Module");
-
         bind(DBService.class).annotatedWith(DB1.class).toProvider(new DBServiceProvider(databaseConfig1));
         bind(DBService.class).annotatedWith(DB2.class).toProvider(new DBServiceProvider(databaseConfig2));
     }
