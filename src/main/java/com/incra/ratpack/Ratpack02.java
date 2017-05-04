@@ -2,7 +2,6 @@ package com.incra.ratpack;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incra.ratpack.config.DatabaseConfig;
-import com.incra.ratpack.database.DBModule;
 import com.incra.ratpack.handlers.MetricHandler;
 import com.incra.ratpack.handlers.UserHandler;
 import com.incra.ratpack.modules.*;
@@ -12,11 +11,6 @@ import ratpack.guice.Guice;
 import ratpack.server.BaseDir;
 import ratpack.server.RatpackServer;
 import ratpack.server.ServerConfig;
-import ratpack.service.Service;
-import ratpack.service.StartEvent;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
 
 public class Ratpack02 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Ratpack02.class);
@@ -31,8 +25,6 @@ public class Ratpack02 {
                 )
                 .registry(Guice.registry(bindingsSpec -> {
                     ServerConfig serverConfig = bindingsSpec.getServerConfig();
-                    DatabaseConfig databaseConfig1 = serverConfig.get("/database1", DatabaseConfig.class);
-                    DatabaseConfig databaseConfig2 = serverConfig.get("/database2", DatabaseConfig.class);
 
                     bindingsSpec
                             .add(ObjectMapper.class, new ObjectMapper()
@@ -40,68 +32,11 @@ public class Ratpack02 {
                                     .registerModule(new MetricSerializerModule()));
 
                     bindingsSpec
-                            .module(PrimaryDatabaseModule.class, config -> {
-                                String url = "jdbc:h2:mem:test1;DB_CLOSE_DELAY=-1";
+                            .add(Ratpack02Module.class, new Ratpack02Module(serverConfig));
 
-                                config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-                                config.addDataSourceProperty("URL", url);
-                                config.setUsername(databaseConfig1.getUsername());
-                                config.setPassword(databaseConfig1.getPassword());
-                                config.setPersistanceUnitName(databaseConfig1.getPersistanceUnitName());
-                            })
-                            .module(AlternateDatabaseModule.class, config -> {
-                                String url = "jdbc:h2:mem:test2;DB_CLOSE_DELAY=-1";
-
-                                config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-                                config.addDataSourceProperty("URL", url);
-                                config.setUsername(databaseConfig2.getUsername());
-                                config.setPassword(databaseConfig2.getPassword());
-                                config.setPersistanceUnitName(databaseConfig2.getPersistanceUnitName());
-                            })
+                    bindingsSpec
                             .module(UserModule.class)
-                            .module(UserModule.class)
-                            .module(MetricModule.class)
-
-                            .bindInstance(new Service() {
-                                @Override
-                                public void onStart(StartEvent event) throws Exception {
-                                    DataSource dataSource = event.getRegistry().get(DataSource.class);
-                                    try (Connection connection = dataSource.getConnection()) {
-
-                                        connection.createStatement()
-                                                .execute("CREATE TABLE `USER` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                                                        "`USERNAME` VARCHAR(255), " +
-                                                        "`EMAIL` VARCHAR(255), " +
-                                                        "DATE_CREATED DATE, " +
-                                                        "LAST_UPDATED DATE);");
-                                        connection.createStatement()
-                                                .execute("INSERT INTO `USER` (USERNAME, EMAIL) VALUES('Luke Daley','luke@gmail.com')");
-                                        connection.createStatement()
-                                                .execute("INSERT INTO `USER` (USERNAME, EMAIL) VALUES('Rob Fletch','rob@gmail.com')");
-                                        connection.createStatement()
-                                                .execute("INSERT INTO `USER` (USERNAME, EMAIL) VALUES('Dan Woods','dan@gmail.com')");
-
-                                        connection.createStatement()
-                                                .execute("CREATE TABLE `EVENT` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                                                        "`TYPE` VARCHAR(255), " +
-                                                        "`DETAIL` VARCHAR(255), " +
-                                                        "DATE_CREATED DATE, " +
-                                                        "LAST_UPDATED DATE);");
-
-                                        connection.createStatement()
-                                                .execute("CREATE TABLE `METRIC` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
-                                                        "`NAME` VARCHAR(255), " +
-                                                        "`VALUE` INTEGER, " +
-                                                        "DATE_CREATED DATE, " +
-                                                        "LAST_UPDATED DATE);");
-
-                                        connection.createStatement()
-                                                .execute("INSERT INTO `METRIC` (NAME, VALUE) VALUES('Clicks', 0);");
-
-                                        LOGGER.debug("Database schema and sample content set up");
-                                    }
-                                }
-                            });
+                            .module(MetricModule.class);
                 }))
 
                 .handlers(chain -> chain

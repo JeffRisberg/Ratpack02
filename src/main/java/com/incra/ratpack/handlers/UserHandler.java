@@ -1,5 +1,6 @@
 package com.incra.ratpack.handlers;
 
+import com.incra.ratpack.binding.annotation.DB1;
 import com.incra.ratpack.database.DBService;
 import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.models.Event;
@@ -26,7 +27,7 @@ public class UserHandler extends BaseHandler implements Handler {
     protected DBService dbService;
 
     @Inject
-    public UserHandler(DBService dbService) {
+    public UserHandler(@DB1 DBService dbService) {
         this.dbService = dbService;
     }
 

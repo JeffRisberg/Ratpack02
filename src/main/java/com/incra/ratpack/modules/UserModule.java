@@ -8,6 +8,7 @@ import com.incra.ratpack.handlers.UserHandler;
  * @since 02/12/17
  */
 public class UserModule extends AbstractModule {
+
     protected void configure() {
         bind(UserHandler.class);
     }

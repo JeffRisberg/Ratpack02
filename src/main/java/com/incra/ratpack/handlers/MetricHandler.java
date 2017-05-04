@@ -1,5 +1,6 @@
 package com.incra.ratpack.handlers;
 
+import com.incra.ratpack.binding.annotation.DB2;
 import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.database.DBService;
 import com.incra.ratpack.models.Event;
@@ -28,7 +29,7 @@ public class MetricHandler extends BaseHandler implements Handler {
     protected DBService dbService;
 
     @Inject
-    public MetricHandler(DBService dbService) {
+    public MetricHandler(@DB2 DBService dbService) {
         this.dbService = dbService;
     }
 
