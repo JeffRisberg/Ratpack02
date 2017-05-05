@@ -33,6 +33,7 @@ public class DBServiceProvider implements Provider<DBService> {
         String databaseName = databaseConfig.getDatabaseName();
         String url = "jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1";
 
+        LOGGER.debug("Setting up database at " + url);
         config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
         config.addDataSourceProperty("URL", url);
         config.setUsername(databaseConfig.getUsername());

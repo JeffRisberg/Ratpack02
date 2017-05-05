@@ -3,6 +3,8 @@ package com.incra.ratpack.database;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ratpack.guice.ConfigurableModule;
 
 import javax.sql.DataSource;
@@ -15,6 +17,7 @@ import javax.sql.DataSource;
  * @since 05/02/17
  */
 public class DBModule extends ConfigurableModule<DBConfig> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBModule.class);
 
     @Override
     protected void configure() {
