@@ -80,7 +80,7 @@ public class DBService extends HikariService {
     public synchronized void closeTransaction() throws DBException {
         EntityManager em = entityManager.get();
 
-        LOGGER.trace("Closing EntityManager");
+        LOGGER.info("Closing EntityManager");
         if (em != null) {
             em.close();
             LOGGER.trace("Closed EntityManager");

@@ -32,14 +32,14 @@ public class DBTransaction {
     }
 
     public void begin() throws DBException {
-        checkDatabase();
+        checkDatabase(true);
     }
 
     public void commit() throws DBException {
-        checkDatabase();
+        checkDatabase(false);
 
         try {
-            LOGGER.trace("Committing Transaction");
+            LOGGER.debug("Committing Transaction");
             transaction.commit();
             LOGGER.trace("Transaction Committed");
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class DBTransaction {
     }
 
     public void rollback() throws DBException {
-        checkDatabase();
+        checkDatabase(false);
 
         try {
             transaction.rollback();
@@ -58,7 +58,7 @@ public class DBTransaction {
     }
 
     public void close() throws DBException {
-        checkDatabase();
+        checkDatabase(false);
 
         try {
             this.dbService.closeTransaction();
@@ -90,7 +90,7 @@ public class DBTransaction {
      * EntityManager and clears the cache.
      */
     public void clear() throws DBException {
-        checkDatabase();
+        checkDatabase(false);
 
         try {
             em.clear();
@@ -105,7 +105,7 @@ public class DBTransaction {
      * @param object The object record to store in the database
      */
     public void create(Object object) throws DBException {
-        checkDatabase();
+        checkDatabase(true);
 
         try {
             em.persist(object);
@@ -122,7 +122,7 @@ public class DBTransaction {
      * @param object The object record to update
      */
     public void update(Object object) throws DBException {
-        checkDatabase();
+        checkDatabase(true);
 
         try {
             //if object already exists in current persistence context
@@ -140,7 +140,7 @@ public class DBTransaction {
      * @param object The object record to delete
      */
     public void delete(Object object) throws DBException {
-        checkDatabase();
+        checkDatabase(true);
 
         try {
             em.remove(object);
@@ -174,7 +174,7 @@ public class DBTransaction {
      * @return Object
      */
     public <T> T getObjectById(Class<T> classObject, int id) throws DBException {
-        checkDatabase();
+        checkDatabase(false);
 
         try {
             return em.find(classObject, id);
@@ -229,7 +229,7 @@ public class DBTransaction {
             throw new DBException("Null query");
         }
 
-        checkDatabase();
+        checkDatabase(false);
 
         int offset = 0;
         int limit = 0;
@@ -252,7 +252,7 @@ public class DBTransaction {
             throw new DBException("Null query");
         }
 
-        checkDatabase();
+        checkDatabase(false);
 
         return getQueryResults(getJPAQuery(em, queryString, bindVariables), offset, limit);
     }
@@ -390,13 +390,13 @@ public class DBTransaction {
 
     // Private helper method that checks that the database is in a valid
     // state to execute against.  Throws an exception if it is not.
-    private void checkDatabase() throws DBException {
+    private void checkDatabase(boolean shouldActivateTransaction) throws DBException {
         if (em == null || !em.isOpen()) {
             LOGGER.debug("em: " + em);
             LOGGER.debug("em.isOpen()? " + em.isOpen());
             throw new DBException("Database is closed");
         }
-        if (!transaction.isActive()) {
+        if (shouldActivateTransaction && transaction.isActive() == false) {
             LOGGER.debug("Starting transaction");
             transaction.begin();
         }

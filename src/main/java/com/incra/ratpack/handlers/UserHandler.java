@@ -49,7 +49,10 @@ public class UserHandler extends BaseHandler implements Handler {
             DBTransaction dbTransaction = dbService.getTransaction();
 
             dbTransaction.create(new User(username, email));
+
             dbTransaction.commit();
+            dbTransaction.close();
+
             return true;
         }).onError(t -> {
             ctx.getResponse().status(400);
@@ -69,6 +72,7 @@ public class UserHandler extends BaseHandler implements Handler {
             dbTransaction.create(event);
 
             dbTransaction.commit();
+            dbTransaction.close();
 
             return userList;
         }).then(userList -> {

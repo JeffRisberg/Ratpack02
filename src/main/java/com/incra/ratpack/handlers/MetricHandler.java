@@ -52,7 +52,10 @@ public class MetricHandler extends BaseHandler implements Handler {
             DBTransaction dbTransaction = dbService.getTransaction();
 
             dbTransaction.create(new Metric(name, value));
+
             dbTransaction.commit();
+            dbTransaction.close();
+
             return true;
         }).onError(t -> {
             ctx.getResponse().status(400);
@@ -71,6 +74,7 @@ public class MetricHandler extends BaseHandler implements Handler {
             dbTransaction.create(event);
 
             dbTransaction.commit();
+            dbTransaction.close();
 
             return metricList;
         }).then(metricList -> {
