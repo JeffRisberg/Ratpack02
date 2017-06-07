@@ -38,10 +38,11 @@ public class DBServiceProvider implements Provider<DBService> {
         config.addDataSourceProperty("URL", url);
         config.setUsername(databaseConfig.getUsername());
         config.setPassword(databaseConfig.getPassword());
+        config.setPoolName("dog");
 
-        HikariDataSource dataSource = new HikariDataSource(config);
+        HikariDataSource hikariDataSource = new HikariDataSource(config);
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = hikariDataSource.getConnection()) {
 
             connection.createStatement()
                     .execute("CREATE TABLE `USER` (ID INT PRIMARY KEY AUTO_INCREMENT, " +
@@ -79,7 +80,7 @@ public class DBServiceProvider implements Provider<DBService> {
         }
 
         try {
-            DBService dbService = new DBService(dataSource, persistanceUnitName);
+            DBService dbService = new DBService(hikariDataSource, persistanceUnitName);
             return dbService;
         } catch (DBException e) {
             e.printStackTrace();

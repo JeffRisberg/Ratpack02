@@ -1,21 +1,21 @@
 package com.incra.ratpack.handlers;
 
 import com.incra.ratpack.binding.annotation.DB2;
-import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.database.DBService;
+import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.models.Event;
 import com.incra.ratpack.models.Metric;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariPoolMXBean;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static ratpack.jackson.Jackson.json;
 
@@ -78,8 +78,21 @@ public class MetricHandler extends BaseHandler implements Handler {
 
             return metricList;
         }).then(metricList -> {
+
+            HikariDataSource hds = dbService.getDataSource();
+            HikariPoolMXBean poolMXBean = hds.getHikariPoolMXBean();
+            int idleConnections = poolMXBean.getIdleConnections();
+            int activeConnections = poolMXBean.getActiveConnections();
+            int threadsAwaitingConnections = poolMXBean.getThreadsAwaitingConnection();
+            int totalConnections = poolMXBean.getTotalConnections();
+
             Map response = new HashMap();
             response.put("data", metricList);
+            response.put("idleConnections", idleConnections);
+            response.put("activeConnections", activeConnections);
+            response.put("threadsAwaitingConnections", threadsAwaitingConnections);
+            response.put("totalConnections", totalConnections);
+
             ctx.render(json(response));
         });
     }

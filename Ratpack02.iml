@@ -52,7 +52,7 @@
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-multibindings:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: io.ratpack:ratpack-jackson:0.9.17" level="project" />
     <orderEntry type="library" name="Maven: io.ratpack:ratpack-hikari:1.4.6" level="project" />
-    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.3.5" level="project" />
+    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.6.2" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.0.13" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.0.13" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-core:4.3.6.Final" level="project" />
