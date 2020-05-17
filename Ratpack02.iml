@@ -4,15 +4,15 @@
     <facet type="jpa" name="JPA">
       <configuration>
         <setting name="validation-enabled" value="true" />
-        <setting name="provider-name" value="" />
         <datasource-mapping>
           <factory-entry name="ratpack-jpa" />
         </datasource-mapping>
+        <naming-strategy-map />
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -23,36 +23,41 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: io.ratpack:ratpack-core:1.4.6" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:linux-x86_64:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:19.0" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
-    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.0.final" level="project" />
-    <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.3.1" level="project" />
-    <orderEntry type="library" name="Maven: org.javassist:javassist:3.19.0-GA" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.7.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-guava:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.15" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.5" level="project" />
-    <orderEntry type="library" name="Maven: io.ratpack:ratpack-guice:1.4.6" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-core:1.7.6" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-exec:1.7.6" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-base:1.7.6" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:21.0" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:linux-x86_64:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-unix-common:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-tcnative:linux-x86_64:2.0.25.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.37.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.activation:javax.activation:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.javassist:javassist:3.22.0-GA" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.9.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-guava:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.23" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-guice:1.7.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject:guice:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-multibindings:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: io.ratpack:ratpack-jackson:0.9.17" level="project" />
-    <orderEntry type="library" name="Maven: io.ratpack:ratpack-hikari:1.4.6" level="project" />
+    <orderEntry type="library" name="Maven: io.ratpack:ratpack-hikari:1.7.6" level="project" />
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.0.13" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.0.13" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-core:4.3.6.Final" level="project" />
