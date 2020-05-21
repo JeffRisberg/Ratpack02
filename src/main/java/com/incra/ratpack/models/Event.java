@@ -14,43 +14,40 @@ import java.util.Map;
 @Entity
 public class Event extends DatedDatabaseItem {
 
-    @Column()
-    String type; // master key
+  @Column() String type; // master key
 
-    @Column()
-    String detail; // second key
+  @Column() String detail; // second key
 
-    public Event() {
-    }
+  public Event() {}
 
-    public Event(String type, String detail) {
-        this.type = type;
-        this.detail = detail;
-    }
+  public Event(String type, String detail) {
+    this.type = type;
+    this.detail = detail;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getDetail() {
-        return detail;
-    }
+  public String getDetail() {
+    return detail;
+  }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
+  public void setDetail(String detail) {
+    this.detail = detail;
+  }
 
-    public Map<String, Object> asMap() {
-        Map<String, Object> result = Maps.newHashMap();
+  public Map<String, Object> asMap() {
+    Map<String, Object> result = Maps.newHashMap();
 
-        result.put("id", getId());
-        result.put("type", getType());
-        result.put("detail", getDetail());
+    result.put("id", getId());
+    result.put("type", getType());
+    result.put("detail", getDetail());
 
-        return result;
-    }
+    return result;
+  }
 }

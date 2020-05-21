@@ -26,74 +26,76 @@ import static ratpack.jackson.Jackson.json;
 @Singleton
 public class MetricHandler extends BaseHandler implements Handler {
 
-    protected DBService dbService;
+  protected DBService dbService;
 
-    @Inject
-    public MetricHandler(@DB2 DBService dbService) {
-        this.dbService = dbService;
-    }
+  @Inject
+  public MetricHandler(@DB2 DBService dbService) {
+    this.dbService = dbService;
+  }
 
-    @Override
-    public void handle(Context ctx) throws Exception {
-        ctx.byMethod(metricSpec ->
-                metricSpec
-                        .post(() -> this.handlePost(ctx))
-                        .get(() -> this.handleGet(ctx)));
-    }
+  @Override
+  public void handle(Context ctx) throws Exception {
+    ctx.byMethod(
+        metricSpec -> metricSpec.post(() -> this.handlePost(ctx)).get(() -> this.handleGet(ctx)));
+  }
 
-    private void handlePost(Context ctx) throws Exception {
-        String name = ctx.getRequest().getQueryParams()
-                .getOrDefault("name", "ClickCount");
-        String valueStr = ctx.getRequest().getQueryParams()
-                .getOrDefault("value", "0");
-        Integer value = Integer.parseInt(valueStr);
+  private void handlePost(Context ctx) throws Exception {
+    String name = ctx.getRequest().getQueryParams().getOrDefault("name", "ClickCount");
+    String valueStr = ctx.getRequest().getQueryParams().getOrDefault("value", "0");
+    Integer value = Integer.parseInt(valueStr);
 
-        Blocking.get(() -> {
-            DBTransaction dbTransaction = dbService.getTransaction();
+    Blocking.get(
+            () -> {
+              DBTransaction dbTransaction = dbService.getTransaction();
 
-            dbTransaction.create(new Metric(name, value));
+              dbTransaction.create(new Metric(name, value));
 
-            dbTransaction.commit();
-            dbTransaction.close();
+              dbTransaction.commit();
+              dbTransaction.close();
 
-            return true;
-        }).onError(t -> {
-            ctx.getResponse().status(400);
-            ctx.render(json(getResponseMap(false, t.getMessage())));
-        }).then(r ->
-                ctx.render(json(getResponseMap(true, null))));
-    }
+              return true;
+            })
+        .onError(
+            t -> {
+              ctx.getResponse().status(400);
+              ctx.render(json(getResponseMap(false, t.getMessage())));
+            })
+        .then(r -> ctx.render(json(getResponseMap(true, null))));
+  }
 
-    private void handleGet(Context ctx) throws Exception {
-        Blocking.get(() -> {
-            DBTransaction dbTransaction = dbService.getTransaction();
+  private void handleGet(Context ctx) throws Exception {
+    Blocking.get(
+            () -> {
+              DBTransaction dbTransaction = dbService.getTransaction();
 
-            List<Metric> metricList = dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
+              List<Metric> metricList =
+                  dbTransaction.getObjects(Metric.class, "Select m from Metric m", null);
 
-            Event event = new Event("FETCH", "METRICS");
-            dbTransaction.create(event);
+              Event event = new Event("FETCH", "METRICS");
+              dbTransaction.create(event);
 
-            dbTransaction.commit();
-            dbTransaction.close();
+              dbTransaction.commit();
+              dbTransaction.close();
 
-            return metricList;
-        }).then(metricList -> {
+              return metricList;
+            })
+        .then(
+            metricList -> {
+              HikariDataSource hds = dbService.getDataSource();
+              HikariPoolMXBean poolMXBean = hds.getHikariPoolMXBean();
+              int idleConnections = poolMXBean.getIdleConnections();
+              int activeConnections = poolMXBean.getActiveConnections();
+              int threadsAwaitingConnections = poolMXBean.getThreadsAwaitingConnection();
+              int totalConnections = poolMXBean.getTotalConnections();
 
-            HikariDataSource hds = dbService.getDataSource();
-            HikariPoolMXBean poolMXBean = hds.getHikariPoolMXBean();
-            int idleConnections = poolMXBean.getIdleConnections();
-            int activeConnections = poolMXBean.getActiveConnections();
-            int threadsAwaitingConnections = poolMXBean.getThreadsAwaitingConnection();
-            int totalConnections = poolMXBean.getTotalConnections();
+              Map response = new HashMap();
+              response.put("data", metricList);
+              response.put("idleConnections", idleConnections);
+              response.put("activeConnections", activeConnections);
+              response.put("threadsAwaitingConnections", threadsAwaitingConnections);
+              response.put("totalConnections", totalConnections);
 
-            Map response = new HashMap();
-            response.put("data", metricList);
-            response.put("idleConnections", idleConnections);
-            response.put("activeConnections", activeConnections);
-            response.put("threadsAwaitingConnections", threadsAwaitingConnections);
-            response.put("totalConnections", totalConnections);
-
-            ctx.render(json(response));
-        });
-    }
+              ctx.render(json(response));
+            });
+  }
 }

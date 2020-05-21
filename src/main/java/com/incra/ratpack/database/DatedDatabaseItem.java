@@ -16,44 +16,44 @@ import java.util.Date;
  */
 @MappedSuperclass
 public abstract class DatedDatabaseItem extends DatabaseItem {
-    private static Logger LOGGER = LoggerFactory.getLogger(DatedDatabaseItem.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(DatedDatabaseItem.class);
 
-    @Column(name = "date_created", columnDefinition = "timestamp not null default now()")
-    protected Date dateCreated = new Date();
+  @Column(name = "date_created", columnDefinition = "timestamp not null default now()")
+  protected Date dateCreated = new Date();
 
-    @Column(name = "last_updated", columnDefinition = "timestamp default now()")
-    protected Date lastUpdated = new Date();
+  @Column(name = "last_updated", columnDefinition = "timestamp default now()")
+  protected Date lastUpdated = new Date();
 
-    public Date getDateCreated() {
-        return dateCreated;
+  public Date getDateCreated() {
+    return dateCreated;
+  }
+
+  public void setDateCreated(Date createdDate) {
+    if (createdDate == null) {
+      createdDate = Calendar.getInstance().getTime();
     }
 
-    public void setDateCreated(Date createdDate) {
-        if (createdDate == null) {
-            createdDate = Calendar.getInstance().getTime();
-        }
+    this.dateCreated = createdDate;
+  }
 
-        this.dateCreated = createdDate;
+  public void setDateCreated() {
+    this.dateCreated = Calendar.getInstance().getTime();
+    this.lastUpdated = Calendar.getInstance().getTime();
+  }
+
+  public Date getLastUpdated() {
+    return lastUpdated;
+  }
+
+  public void setLastUpdated(Date modifiedDate) {
+    if (modifiedDate == null) {
+      modifiedDate = Calendar.getInstance().getTime();
     }
 
-    public void setDateCreated() {
-        this.dateCreated = Calendar.getInstance().getTime();
-        this.lastUpdated = Calendar.getInstance().getTime();
-    }
+    this.lastUpdated = modifiedDate;
+  }
 
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date modifiedDate) {
-        if (modifiedDate == null) {
-            modifiedDate = Calendar.getInstance().getTime();
-        }
-
-        this.lastUpdated = modifiedDate;
-    }
-
-    public void setLastUpdated() {
-        this.lastUpdated = Calendar.getInstance().getTime();
-    }
+  public void setLastUpdated() {
+    this.lastUpdated = Calendar.getInstance().getTime();
+  }
 }

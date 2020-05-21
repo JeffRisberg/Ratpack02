@@ -10,10 +10,10 @@ import java.util.Map;
  */
 public class BaseHandler {
 
-    protected static Map<String, Object> getResponseMap(Boolean status, String message) {
-        Map<String, Object> response = Maps.newHashMap();
-        response.put("success", status);
-        response.put("error", message);
-        return response;
-    }
+  protected static Map<String, Object> getResponseMap(Boolean status, String message) {
+    Map<String, Object> response = Maps.newHashMap();
+    response.put("success", status);
+    response.put("error", message);
+    return response;
+  }
 }

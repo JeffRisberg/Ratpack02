@@ -17,29 +17,29 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 public abstract class DatabaseItem implements Serializable {
-    private static Logger LOGGER = LoggerFactory.getLogger(DatabaseItem.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(DatabaseItem.class);
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    public DatabaseItem() {
-        super();
-    }
+  public DatabaseItem() {
+    super();
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  public Integer getId() {
+    return id;
+  }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-    public boolean isPersisted() {
-        return id != null;
-    }
+  public boolean isPersisted() {
+    return id != null;
+  }
 
-    public String toString() {
-        return "(" + this.getClass().getSimpleName() + " (" + id + "))";
-    }
+  public String toString() {
+    return "(" + this.getClass().getSimpleName() + " (" + id + "))";
+  }
 }

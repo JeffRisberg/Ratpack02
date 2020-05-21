@@ -1,11 +1,9 @@
 package com.incra.ratpack.models;
 
-import com.google.common.collect.Maps;
 import com.incra.ratpack.database.DatedDatabaseItem;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import java.util.Map;
 
 /**
  * @author Jeff Risberg
@@ -14,33 +12,30 @@ import java.util.Map;
 @Entity
 public class Metric extends DatedDatabaseItem {
 
-    @Column()
-    String name;
+  @Column() String name;
 
-    @Column()
-    Integer value;
+  @Column() Integer value;
 
-    public Metric() {
-    }
+  public Metric() {}
 
-    public Metric(String name, Integer value) {
-        this.name = name;
-        this.value = value;
-    }
+  public Metric(String name, Integer value) {
+    this.name = name;
+    this.value = value;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public Integer getValue() {
-        return value;
-    }
+  public Integer getValue() {
+    return value;
+  }
 
-    public void setValue(Integer value) {
-        this.value = value;
-    }
+  public void setValue(Integer value) {
+    this.value = value;
+  }
 }

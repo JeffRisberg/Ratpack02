@@ -14,30 +14,32 @@ import java.io.IOException;
  * @since 02/12/17
  */
 public class UserSerializerModule extends SimpleModule {
-    private static final String NAME = "UserSerializerModule";
-    private static final VersionUtil VERSION_UTIL = new VersionUtil() {
-    };
+  private static final String NAME = "UserSerializerModule";
+  private static final VersionUtil VERSION_UTIL = new VersionUtil() {};
 
-    public UserSerializerModule() {
-        super(NAME, VERSION_UTIL.version());
+  public UserSerializerModule() {
+    super(NAME, VERSION_UTIL.version());
 
-        addSerializer(User.class, new JsonSerializer<User>() {
-            @Override
-            public void serialize(User user, JsonGenerator jGen, SerializerProvider serializerProvider)
-                    throws IOException {
+    addSerializer(
+        User.class,
+        new JsonSerializer<User>() {
+          @Override
+          public void serialize(
+              User user, JsonGenerator jGen, SerializerProvider serializerProvider)
+              throws IOException {
 
-                jGen.writeStartObject();
-                jGen.writeNumberField("id", user.getId());
-                jGen.writeStringField("email", user.getEmail());
-                jGen.writeStringField("username", user.getUsername());
-                if (user.getDateCreated() != null) {
-                    jGen.writeNumberField("dateCreated", user.getDateCreated().getTime());
-                }
-                if (user.getLastUpdated() != null) {
-                    jGen.writeNumberField("lastUpdated", user.getLastUpdated().getTime());
-                }
-                jGen.writeEndObject();
+            jGen.writeStartObject();
+            jGen.writeNumberField("id", user.getId());
+            jGen.writeStringField("email", user.getEmail());
+            jGen.writeStringField("username", user.getUsername());
+            if (user.getDateCreated() != null) {
+              jGen.writeNumberField("dateCreated", user.getDateCreated().getTime());
             }
+            if (user.getLastUpdated() != null) {
+              jGen.writeNumberField("lastUpdated", user.getLastUpdated().getTime());
+            }
+            jGen.writeEndObject();
+          }
         });
-    }
+  }
 }

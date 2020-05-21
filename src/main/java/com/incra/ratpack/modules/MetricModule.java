@@ -8,7 +8,7 @@ import com.incra.ratpack.handlers.MetricHandler;
  * @since 02/12/17
  */
 public class MetricModule extends AbstractModule {
-    protected void configure() {
-        bind(MetricHandler.class);
-    }
+  protected void configure() {
+    bind(MetricHandler.class);
+  }
 }
