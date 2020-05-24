@@ -11,11 +11,33 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <slf4jVersion>1.7.26</slf4jVersion>
+        <projectLombokVersion>1.16.20</projectLombokVersion>
         <ratpackVersion>1.7.6</ratpackVersion>
         <ratpackJacksonVersion>0.9.17</ratpackJacksonVersion>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${projectLombokVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ratpack</groupId>
+            <artifactId>ratpack-core</artifactId>
+            <version>${ratpackVersion}</version>
+        </dependency>
         <dependency>
             <groupId>io.ratpack</groupId>
             <artifactId>ratpack-core</artifactId>

@@ -15,10 +15,9 @@ import java.io.IOException;
  */
 public class UserSerializerModule extends SimpleModule {
   private static final String NAME = "UserSerializerModule";
-  private static final VersionUtil VERSION_UTIL = new VersionUtil() {};
 
   public UserSerializerModule() {
-    super(NAME, VERSION_UTIL.version());
+    super(NAME);
 
     addSerializer(
         User.class,

@@ -1,7 +1,6 @@
 package com.incra.ratpack.modules;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.VersionUtil;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -15,10 +14,9 @@ import java.io.IOException;
  */
 public class MetricSerializerModule extends SimpleModule {
   private static final String NAME = "MetricSerializerModule";
-  private static final VersionUtil VERSION_UTIL = new VersionUtil() {};
 
   public MetricSerializerModule() {
-    super(NAME, VERSION_UTIL.version());
+    super(NAME);
 
     addSerializer(
         Metric.class,

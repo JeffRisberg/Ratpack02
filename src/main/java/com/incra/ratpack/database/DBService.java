@@ -2,14 +2,12 @@ package com.incra.ratpack.database;
 
 import com.google.inject.Inject;
 import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ratpack.hikari.HikariService;
-
+import java.util.Properties;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.util.Properties;
+import lombok.extern.slf4j.Slf4j;
+import ratpack.hikari.HikariService;
 
 /**
  * The <i>DBService</i> is an extension of HikariService, and it provides JPA-based usage of Hikari.
@@ -18,9 +16,8 @@ import java.util.Properties;
  * @author Jeff Risberg
  * @since 05/02/17
  */
+@Slf4j
 public class DBService extends HikariService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DBService.class);
-
   protected String persistanceUnitName;
 
   private EntityManagerFactory emf;
@@ -60,7 +57,7 @@ public class DBService extends HikariService {
   public synchronized DBTransaction getTransaction() throws DBException {
     DBTransaction dbTransaction = transaction.get();
 
-    LOGGER.info("Getting JpaTransaction");
+    log.info("Getting JpaTransaction");
     if (dbTransaction == null) {
       dbTransaction = createTransaction();
       transaction.set(dbTransaction);
@@ -77,10 +74,10 @@ public class DBService extends HikariService {
   public synchronized void closeTransaction() throws DBException {
     EntityManager em = entityManager.get();
 
-    LOGGER.info("Closing EntityManager");
+    log.info("Closing EntityManager");
     if (em != null) {
       em.close();
-      LOGGER.trace("Closed EntityManager");
+      log.trace("Closed EntityManager");
     }
 
     transaction.set(null);
@@ -95,11 +92,11 @@ public class DBService extends HikariService {
   public void commitTransaction() throws DBException {
     DBTransaction dbTransaction = getTransaction();
 
-    LOGGER.trace("Committing JpaTransaction");
+    log.trace("Committing JpaTransaction");
     // TODO - consider checking isActive() and isOpen(), for now minimize differences
     if (dbTransaction != null && dbTransaction.isActive()) {
-      LOGGER.trace("JpaTransaction isClosed? " + entityManager.get().isOpen());
-      LOGGER.trace("JpaTransaction isActive? " + dbTransaction.isActive());
+      log.trace("JpaTransaction isClosed? " + entityManager.get().isOpen());
+      log.trace("JpaTransaction isActive? " + dbTransaction.isActive());
       dbTransaction.commit();
     }
   }
@@ -129,7 +126,7 @@ public class DBService extends HikariService {
     try {
       return emf.createEntityManager();
     } catch (Exception e) {
-      LOGGER.error(e.getMessage());
+      log.error(e.getMessage());
       throw new DBException(e);
     }
   }

@@ -1,6 +1,10 @@
 package com.incra.ratpack.models;
 
 import com.incra.ratpack.database.DatedDatabaseItem;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,33 +13,16 @@ import javax.persistence.Entity;
  * @author Jeff Risberg
  * @since 12/30/16
  */
+@Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Metric extends DatedDatabaseItem {
 
-  @Column() String name;
+  @Column(name = "name")
+  protected String name;
 
-  @Column() Integer value;
-
-  public Metric() {}
-
-  public Metric(String name, Integer value) {
-    this.name = name;
-    this.value = value;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Integer getValue() {
-    return value;
-  }
-
-  public void setValue(Integer value) {
-    this.value = value;
-  }
+  @Column(name = "value")
+  protected Integer value;
 }
