@@ -1,16 +1,9 @@
 {
-  "database1": {
+  "database": {
     "server": "localhost",
     "portNumber": 3306,
     "username": "sa",
     "password": "",
-    "databaseName": "primary"
-  },
-  "database2": {
-    "server": "localhost",
-    "portNumber": 3306,
-    "username": "sa",
-    "password": "",
-    "databaseName": "secondary"
+    "databaseName": "ratpack02"
   }
 }

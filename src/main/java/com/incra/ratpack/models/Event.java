@@ -1,6 +1,6 @@
 package com.incra.ratpack.models;
 
-import com.incra.ratpack.database.DatedDatabaseItem;
+import com.incra.ratpack.database.AbstractDatedDatabaseItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +18,7 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Event extends DatedDatabaseItem {
+public class Event extends AbstractDatedDatabaseItem {
 
   @Column(name = "type")
   protected String type; // master key

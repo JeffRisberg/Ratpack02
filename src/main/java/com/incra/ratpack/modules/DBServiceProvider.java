@@ -6,8 +6,7 @@ import com.incra.ratpack.database.DBConfig;
 import com.incra.ratpack.database.DBException;
 import com.incra.ratpack.database.DBService;
 import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,9 +15,8 @@ import java.sql.SQLException;
  * @author Jeff Risberg
  * @since 05/04/17
  */
+@Slf4j
 public class DBServiceProvider implements Provider<DBService> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DBServiceProvider.class);
-
   private DatabaseConfig databaseConfig;
 
   public DBServiceProvider(DatabaseConfig databaseConfig) {
@@ -33,7 +31,7 @@ public class DBServiceProvider implements Provider<DBService> {
     String databaseName = databaseConfig.getDatabaseName();
     String url = "jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1";
 
-    LOGGER.debug("Setting up database at " + url);
+    log.debug("Setting up database at " + url);
     config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
     config.addDataSourceProperty("URL", url);
     config.setUsername(databaseConfig.getUsername());
@@ -43,7 +41,6 @@ public class DBServiceProvider implements Provider<DBService> {
     HikariDataSource hikariDataSource = new HikariDataSource(config);
 
     try (Connection connection = hikariDataSource.getConnection()) {
-
       connection
           .createStatement()
           .execute(
@@ -84,7 +81,7 @@ public class DBServiceProvider implements Provider<DBService> {
           .createStatement()
           .execute("INSERT INTO `METRIC` (NAME, VALUE) VALUES('Clicks', 0);");
 
-      LOGGER.debug("Database schema and sample content set up for database " + databaseName);
+      log.debug("Database schema and sample content set up for database " + databaseName);
     } catch (SQLException e) {
       e.printStackTrace();
     }

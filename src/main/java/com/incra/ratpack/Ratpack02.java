@@ -5,15 +5,14 @@ import com.incra.ratpack.config.DatabaseConfig;
 import com.incra.ratpack.handlers.MetricHandler;
 import com.incra.ratpack.handlers.UserHandler;
 import com.incra.ratpack.modules.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import ratpack.guice.Guice;
 import ratpack.server.BaseDir;
 import ratpack.server.RatpackServer;
 import ratpack.server.ServerConfig;
 
+@Slf4j
 public class Ratpack02 {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Ratpack02.class);
 
   public static void main(String[] args) throws Exception {
     RatpackServer.start(
@@ -37,7 +36,8 @@ public class Ratpack02 {
 
                           bindingsSpec.module(new Ratpack02Module(serverConfig));
 
-                          bindingsSpec.module(UserModule.class).module(MetricModule.class);
+                          bindingsSpec.module(UserModule.class);
+                          bindingsSpec.module(MetricModule.class);
                         }))
                 .handlers(
                     chain ->

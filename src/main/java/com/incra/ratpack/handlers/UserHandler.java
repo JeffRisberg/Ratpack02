@@ -1,6 +1,6 @@
 package com.incra.ratpack.handlers;
 
-import com.incra.ratpack.binding.annotation.DB1;
+import com.incra.ratpack.binding.annotation.DB;
 import com.incra.ratpack.database.DBService;
 import com.incra.ratpack.database.DBTransaction;
 import com.incra.ratpack.models.Event;
@@ -27,7 +27,10 @@ public class UserHandler extends BaseHandler implements Handler {
   protected DBService dbService;
 
   @Inject
-  public UserHandler(@DB1 DBService dbService) {
+  public UserHandler(@DB DBService dbService) {
+    if (dbService == null) {
+      throw new IllegalArgumentException("unknown dbService");
+    }
     this.dbService = dbService;
   }
 
@@ -38,6 +41,7 @@ public class UserHandler extends BaseHandler implements Handler {
   }
 
   private void handlePost(Context ctx) throws Exception {
+
     String username = ctx.getRequest().getQueryParams().getOrDefault("username", "Han Solo");
     String email = ctx.getRequest().getQueryParams().getOrDefault("email", "han@rebels.org");
 
