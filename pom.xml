@@ -15,6 +15,7 @@
         <projectLombokVersion>1.16.20</projectLombokVersion>
         <ratpackVersion>1.7.6</ratpackVersion>
         <ratpackJacksonVersion>0.9.17</ratpackJacksonVersion>
+        <hibernateVersion>5.4.14.Final</hibernateVersion>
     </properties>
 
     <dependencies>
@@ -61,7 +62,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.6.2</version>
+            <version>2.7.9</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -71,12 +72,12 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.3.6.Final</version>
+            <version>${hibernateVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.6.Final</version>
+            <version>${hibernateVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
