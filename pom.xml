@@ -13,7 +13,7 @@
         <java.version>1.8</java.version>
         <slf4jVersion>1.7.26</slf4jVersion>
         <projectLombokVersion>1.16.20</projectLombokVersion>
-        <ratpackVersion>1.8.0</ratpackVersion>
+        <ratpackVersion>1.9.0</ratpackVersion>
         <ratpackJacksonVersion>0.9.17</ratpackJacksonVersion>
         <hibernateVersion>5.4.14.Final</hibernateVersion>
     </properties>
