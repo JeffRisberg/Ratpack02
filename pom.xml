@@ -15,7 +15,7 @@
         <projectLombokVersion>1.16.20</projectLombokVersion>
         <ratpackVersion>1.8.0</ratpackVersion>
         <ratpackJacksonVersion>0.9.17</ratpackJacksonVersion>
-        <hibernateVersion>5.4.14.Final</hibernateVersion>
+        <hibernateVersion>5.4.24.Final</hibernateVersion>
     </properties>
 
     <dependencies>
